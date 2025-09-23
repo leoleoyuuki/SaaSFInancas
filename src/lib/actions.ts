@@ -21,64 +21,68 @@ export async function getCategorizedSampleTransactions(): Promise<{ data?: Categ
     return await categorizeAllTransactions(transactions);
   } catch (error) {
     console.error('Error getting sample transactions:', error);
-    return { error: 'An error occurred while getting sample transactions. Please try again.' };
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
+    return { error: `An error occurred while getting sample transactions: ${errorMessage}` };
   }
 }
 
 export async function processAndCategorizePdf(pdfBase64: string): Promise<{ data?: CategorizedTransaction[], error?: string }> {
+  let extractedTransactions: Transaction[] = [];
   try {
     // Simulate a delay for loading states
     await new Promise(resolve => setTimeout(resolve, 1500));
     
-    const extractedTransactions = await extractTransactionsFromPdf(pdfBase64);
+    extractedTransactions = await extractTransactionsFromPdf(pdfBase64);
     
     if (!extractedTransactions || extractedTransactions.length === 0) {
-      return { error: 'No transactions could be extracted from the PDF. Please try another file or use sample data.' };
+      return { error: 'The AI could not extract any transactions from the PDF. The document might be empty, password-protected, or in a format the AI cannot read. Please try another file.' };
     }
     
-    return await categorizeAllTransactions(extractedTransactions);
-
   } catch (error) {
-    console.error('Error processing PDF:', error);
-    return { error: 'An error occurred while processing the PDF. Please try again.' };
+    console.error('Error during PDF transaction extraction:', error);
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
+    return { error: `Failed during the AI extraction step. The model may be unable to process this document. Details: ${errorMessage}` };
+  }
+
+  try {
+    return await categorizeAllTransactions(extractedTransactions);
+  } catch (error) {
+    console.error('Error during transaction categorization:', error);
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
+    return { error: `Failed during the AI categorization step after transactions were extracted. Details: ${errorMessage}` };
   }
 }
 
 async function categorizeAllTransactions(transactions: Transaction[]): Promise<{ data?: CategorizedTransaction[]; error?: string }> {
-  try {
-    // Filter out income, as we don't need to categorize it.
-    const expensesToCategorize = transactions.filter(t => t.type === 'expense');
-    
-    const aiInput = expensesToCategorize.map(({ date, amount, description }) => ({
-      date: new Date(date).toLocaleDateString(), // Format date for AI
-      amount,
-      description,
-    }));
+  // Filter out income, as we don't need to categorize it.
+  const expensesToCategorize = transactions.filter(t => t.type === 'expense');
+  
+  const aiInput = expensesToCategorize.map(({ date, amount, description }) => ({
+    date: new Date(date).toLocaleDateString(), // Format date for AI
+    amount,
+    description,
+  }));
 
-    let categorizedExpenses: CategorizedTransaction[] = [];
+  let categorizedExpenses: CategorizedTransaction[] = [];
 
-    if (aiInput.length > 0) {
-      const result = await categorizeTransactionsAI({ transactions: aiInput });
-      categorizedExpenses = result.categorizedTransactions.map((ct, index) => {
-        // Assuming the AI returns transactions in the same order
-        const originalTransaction = expensesToCategorize.find(t => t.description === ct.description && t.amount === ct.amount);
-        return {
-          ...(originalTransaction || expensesToCategorize[index]),
-          id: originalTransaction?.id || function_uuid(),
-          category: ct.category,
-        };
-      });
-    }
-
-    const incomeTransactions = transactions
-      .filter(t => t.type === 'income')
-      .map(t => ({ ...t, category: 'Income' as const }));
-
-    const allCategorized = [...incomeTransactions, ...categorizedExpenses].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-    
-    return { data: allCategorized };
-  } catch (error) {
-    console.error('Error categorizing transactions:', error);
-    return { error: 'An error occurred while categorizing transactions. Please try again.' };
+  if (aiInput.length > 0) {
+    const result = await categorizeTransactionsAI({ transactions: aiInput });
+    categorizedExpenses = result.categorizedTransactions.map((ct, index) => {
+      // Assuming the AI returns transactions in the same order
+      const originalTransaction = expensesToCategorize.find(t => t.description === ct.description && t.amount === ct.amount);
+      return {
+        ...(originalTransaction || expensesToCategorize[index]),
+        id: originalTransaction?.id || function_uuid(),
+        category: ct.category,
+      };
+    });
   }
+
+  const incomeTransactions = transactions
+    .filter(t => t.type === 'income')
+    .map(t => ({ ...t, category: 'Income' as const }));
+
+  const allCategorized = [...incomeTransactions, ...categorizedExpenses].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  
+  return { data: allCategorized };
 }
