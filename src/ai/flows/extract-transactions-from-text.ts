@@ -33,39 +33,38 @@ export async function extractTransactionsFromText(input: ExtractTransactionsFrom
     return extractTransactionsFlow(input);
 }
 
-const extractTransactionsPrompt = ai.definePrompt({
-  name: 'extractTransactionsPrompt',
-  input: {schema: z.object({
-    document: z.string().describe('A document containing transaction data. This can be raw text or a data URI for a PDF.')
-  })},
-  output: {schema: ExtractTransactionsFromTextOutputSchema},
-  prompt: `You are a financial expert specializing in extracting transaction data from raw text or PDF documents.
-  You will be given the text content of a bank statement or a direct PDF file and you need to extract all transactions from it.
-  Identify the date, description, amount, and type (income or expense) for each transaction.
-  For the transaction type, deposits or credits are 'income', and withdrawals, payments, or debits are 'expense'.
-  Return the data in the specified JSON format.
-
-  Content:
-  {{media url=document}}
-  `,
-  model: 'googleai/gemini-2.5-flash',
-});
-
-
 const extractTransactionsFlow = ai.defineFlow(
   {
     name: 'extractTransactionsFlow',
     inputSchema: ExtractTransactionsFromTextInputSchema,
     outputSchema: ExtractTransactionsFromTextOutputSchema,
   },
-  async input => {
-    // The prompt expects a data URI, so if we just have text, we wrap it.
-    // This removes the need for complex logic inside the prompt template.
-    const document = input.textContent.startsWith('data:')
-      ? input.textContent
-      : `data:text/plain;base64,${Buffer.from(input.textContent).toString('base64')}`;
-      
-    const {output} = await extractTransactionsPrompt({ document });
+  async (input) => {
+    // Determine if the input is a data URI or plain text.
+    const isDataUri = input.textContent.startsWith('data:');
+
+    // Create the prompt parts based on the input type.
+    const promptParts = [
+      {
+        text: `You are a financial expert specializing in extracting transaction data from documents.
+        You will be given the content of a bank statement and you need to extract all transactions from it.
+        Identify the date, description, amount, and type (income or expense) for each transaction.
+        For the transaction type, deposits or credits are 'income', and withdrawals, payments, or debits are 'expense'.
+        Return the data in the specified JSON format.`,
+      },
+      isDataUri
+        ? { media: { url: input.textContent } }
+        : { text: `\n\nDocument Content:\n${input.textContent}` },
+    ];
+
+    const { output } = await ai.generate({
+      model: 'googleai/gemini-2.5-flash',
+      prompt: promptParts,
+      output: {
+        schema: ExtractTransactionsFromTextOutputSchema,
+      },
+    });
+
     return output!;
   }
 );
