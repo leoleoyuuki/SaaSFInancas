@@ -35,7 +35,9 @@ export async function extractTransactionsFromText(input: ExtractTransactionsFrom
 
 const extractTransactionsPrompt = ai.definePrompt({
   name: 'extractTransactionsPrompt',
-  input: {schema: ExtractTransactionsFromTextInputSchema},
+  input: {schema: z.object({
+    document: z.string().describe('A document containing transaction data. This can be raw text or a data URI for a PDF.')
+  })},
   output: {schema: ExtractTransactionsFromTextOutputSchema},
   prompt: `You are a financial expert specializing in extracting transaction data from raw text or PDF documents.
   You will be given the text content of a bank statement or a direct PDF file and you need to extract all transactions from it.
@@ -44,11 +46,7 @@ const extractTransactionsPrompt = ai.definePrompt({
   Return the data in the specified JSON format.
 
   Content:
-  {{#if (startsWith textContent "data:")}}
-  {{media url=textContent}}
-  {{else}}
-  {{{textContent}}}
-  {{/if}}
+  {{media url=document}}
   `,
   model: 'googleai/gemini-2.5-flash',
 });
@@ -61,7 +59,13 @@ const extractTransactionsFlow = ai.defineFlow(
     outputSchema: ExtractTransactionsFromTextOutputSchema,
   },
   async input => {
-    const {output} = await extractTransactionsPrompt(input);
+    // The prompt expects a data URI, so if we just have text, we wrap it.
+    // This removes the need for complex logic inside the prompt template.
+    const document = input.textContent.startsWith('data:')
+      ? input.textContent
+      : `data:text/plain;base64,${Buffer.from(input.textContent).toString('base64')}`;
+      
+    const {output} = await extractTransactionsPrompt({ document });
     return output!;
   }
 );
