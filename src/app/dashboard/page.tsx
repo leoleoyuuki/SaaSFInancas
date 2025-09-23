@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useTransition, useMemo } from 'react';
-import { Loader2, FileText } from 'lucide-react';
+import { useState, useTransition, useMemo, useRef } from 'react';
+import { Loader2, FileText, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import type { CategorizedTransaction } from '@/lib/types';
-import { getCategorizedSampleTransactions } from '@/lib/actions';
+import { getCategorizedSampleTransactions, processAndCategorizePdf } from '@/lib/actions';
 import { KpiCards, type Summary } from '@/components/dashboard/kpi-cards';
 import { SpendingPieChart, type CategorySpending } from '@/components/dashboard/spending-pie-chart';
 import { IncomeExpenseBarChart } from '@/components/dashboard/income-expense-bar-chart';
@@ -16,6 +16,7 @@ export default function DashboardPage() {
   const [transactions, setTransactions] = useState<CategorizedTransaction[]>([]);
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleUseSampleData = () => {
     startTransition(async () => {
@@ -34,6 +35,37 @@ export default function DashboardPage() {
         });
       }
     });
+  };
+
+  const handlePdfUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const base64 = (e.target?.result as string).split(',')[1];
+        startTransition(async () => {
+          const result = await processAndCategorizePdf(base64);
+          if (result.data) {
+            setTransactions(result.data);
+            toast({
+              title: "Success!",
+              description: "PDF processed and transactions categorized.",
+            });
+          } else if (result.error) {
+            toast({
+              variant: "destructive",
+              title: "Uh oh! Something went wrong.",
+              description: result.error,
+            });
+          }
+        });
+      };
+      reader.readAsDataURL(file);
+    }
+     // Reset file input
+    if(fileInputRef.current) {
+        fileInputRef.current.value = '';
+    }
   };
   
   const hasTransactions = transactions.length > 0;
@@ -74,7 +106,7 @@ export default function DashboardPage() {
       <div className="flex justify-center items-center flex-col gap-4 text-center">
         <Loader2 className="h-12 w-12 animate-spin text-primary" />
         <h3 className="text-lg font-semibold font-headline">Processing your data...</h3>
-        <p className="text-sm text-muted-foreground">This may take a moment. We're categorizing your transactions.</p>
+        <p className="text-sm text-muted-foreground">This may take a moment. We're extracting and categorizing your transactions.</p>
       </div>
       <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
         <Skeleton className="h-[126px]"/>
@@ -96,11 +128,18 @@ export default function DashboardPage() {
         <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-muted-foreground/30 bg-card p-12 text-center h-[400px] shadow-sm">
           <FileText className="mx-auto h-12 w-12 text-muted-foreground" />
           <h3 className="mt-4 text-lg font-semibold font-headline">Get Started</h3>
-          <p className="mb-4 mt-2 text-sm text-muted-foreground">Use sample transaction data to see your financial overview.</p>
-           <Button onClick={handleUseSampleData} variant="default" className="mt-1">
-            <FileText className="mr-2 h-4 w-4" />
-            Use Sample Data
-          </Button>
+          <p className="mb-4 mt-2 text-sm text-muted-foreground">Upload a PDF bank statement or use sample data to see your financial overview.</p>
+          <div className="flex gap-4">
+            <Button onClick={() => fileInputRef.current?.click()} variant="default">
+              <Upload className="mr-2 h-4 w-4" />
+              Upload PDF Statement
+            </Button>
+            <input type="file" ref={fileInputRef} onChange={handlePdfUpload} accept=".pdf" className="hidden" />
+            <Button onClick={handleUseSampleData} variant="secondary" className="mt-1">
+              <FileText className="mr-2 h-4 w-4" />
+              Use Sample Data
+            </Button>
+          </div>
         </div>
       )}
 
