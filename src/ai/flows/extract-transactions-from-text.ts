@@ -40,10 +40,8 @@ const extractTransactionsFlow = ai.defineFlow(
     outputSchema: ExtractTransactionsFromTextOutputSchema,
   },
   async (input) => {
-    // Determine if the input is a data URI or plain text.
     const isDataUri = input.textContent.startsWith('data:');
 
-    // Create the prompt parts based on the input type.
     const promptParts = [
       {
         text: `You are a financial expert specializing in extracting transaction data from documents.
