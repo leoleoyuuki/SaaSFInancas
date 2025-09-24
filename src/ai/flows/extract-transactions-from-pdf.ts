@@ -42,20 +42,17 @@ const extractTransactionsFlow = ai.defineFlow(
   async (input) => {
     const { output } = await ai.generate({
       model: 'googleai/gemini-2.5-flash',
-      prompt: `Você é um especialista em finanças. Sua tarefa é analisar o texto de um extrato bancário e extrair todas as transações, formatando-as como um objeto JSON.
+      prompt: `Faça um relatório financeiro de gastos e entradas com base no seguinte texto extraído de um extrato bancário. Ignore saldos e outras informações que não sejam transações individuais.
 
-        REGRAS IMPORTANTES:
-        - A data deve estar no formato YYYY-MM-DD.
-        - O valor (amount) DEVE ser um número NEGATIVO para despesas e POSITIVO para receitas.
-        - O tipo (type) deve ser 'expense' para despesas e 'income' para receitas.
-        - Ignore saldos, resumos e outras informações que não sejam transações individuais.
-
-        Texto do extrato:
-        {{{extractedText}}}
-      `,
+Texto do extrato:
+{{{extractedText}}}`,
       output: {
         schema: ExtractTransactionsFromPdfOutputSchema,
+        format: 'json'
       },
+      config: {
+        temperature: 0.1
+      }
     });
 
     return output!;
