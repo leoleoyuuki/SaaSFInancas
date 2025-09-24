@@ -41,7 +41,7 @@ const prompt = ai.definePrompt({
 REGRAS IMPORTANTES:
 1.  **Baseie-se Estritamente no Texto:** NÃO invente, infira ou alucine nenhuma informação. Extraia APENAS as transações que estão claramente presentes no texto fornecido.
 2.  **Formato do Valor:** Despesas (débitos) DEVEM ter um valor numérico negativo. Receitas (créditos) DEVEM ter um valor numérico positivo.
-3.  **Ignore o Resto:** Ignore saldos, resumos, ou qualquer outra informação que não seja uma transação individual.
+3.  **Ignore o Resto:** Ignore saldos, resumos, ou qualquer outra informação que não seja uma transação individual, mas tome MUITO cuidado para não faltar informações.
 
 Texto do extrato:
 {{{extractedText}}}
