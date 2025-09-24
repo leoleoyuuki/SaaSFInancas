@@ -36,12 +36,13 @@ export default function DashboardPage() {
   const handlePdfUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => {
-        const base64 = (reader.result as string).split(',')[1];
-        startTransition(async () => {
-          const result = await processAndCategorizePdf(base64);
+      startTransition(async () => {
+        try {
+          const formData = new FormData();
+          formData.append('file', file);
+          
+          const result = await processAndCategorizePdf(formData);
+          
           if (result.data) {
             setTransactions(result.data);
           } else if (result.error) {
@@ -51,16 +52,15 @@ export default function DashboardPage() {
               description: result.error,
             });
           }
-        });
-      };
-      reader.onerror = (error) => {
-         toast({
-            variant: "destructive",
-            title: "Failed to read file",
-            description: "There was an issue reading your PDF file.",
-          });
-          console.error("FileReader error: ", error);
-      };
+        } catch (error) {
+           const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred.";
+           toast({
+              variant: "destructive",
+              title: "Failed to process PDF",
+              description: errorMessage,
+           });
+        }
+      });
     }
      // Reset file input
     if(fileInputRef.current) {

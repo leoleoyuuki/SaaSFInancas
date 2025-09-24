@@ -1,20 +1,18 @@
 import { NextResponse } from 'next/server';
-// Use dynamic import for pdf-parse to ensure it's treated as an external dependency
-// in serverless environments, preventing bundling issues.
-const pdf = (await import('pdf-parse')).default;
+import pdf from "pdf-parse";
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
-    const { pdfBase64 } = body;
+    const formData = await request.formData();
+    const file = formData.get("file") as File;
 
-    if (!pdfBase64) {
-      return NextResponse.json({ error: 'Nenhum dado pdfBase64 enviado.' }, { status: 400 });
+    if (!file) {
+      return NextResponse.json({ error: "Nenhum arquivo enviado." }, { status: 400 });
     }
-    
-    // pdf-parse espera um Buffer.
-    // O segundo argumento 'base64' é crucial para a conversão correta.
-    const pdfBuffer = Buffer.from(pdfBase64, 'base64');
+
+    // Converte o File da Web API em um Buffer do Node.js
+    const arrayBuffer = await file.arrayBuffer();
+    const pdfBuffer = Buffer.from(arrayBuffer);
     
     const data = await pdf(pdfBuffer);
     
