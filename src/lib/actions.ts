@@ -1,10 +1,30 @@
 'use server';
 
 import { categorizeTransactions as categorizeTransactionsAI } from '@/ai/flows/categorize-transactions-ai';
-import { extractTransactionsFromPdf } from '@/ai/flows/extract-transactions-from-pdf';
+import { extractTransactionsFromText } from '@/ai/flows/extract-transactions-from-text';
 import type { CategorizedTransaction, Transaction } from '@/lib/types';
 import { sampleTransactions } from '@/lib/data';
 import { function_uuid } from '@/lib/data';
+import pdf from 'pdf-parse';
+
+async function extractTransactionsFromPdf(pdfBase64: string): Promise<Transaction[]> {
+    const pdfBuffer = Buffer.from(pdfBase64, 'base64');
+    const data = await pdf(pdfBuffer);
+    const textContent = data.text;
+    
+    if (!textContent) {
+        throw new Error("Could not extract text from the PDF. The file might be empty or contain only images.");
+    }
+    
+    const extractionResult = await extractTransactionsFromText({ textContent });
+    
+    if (!extractionResult.transactions || extractionResult.transactions.length === 0) {
+      throw new Error('The AI could not extract any transactions from the PDF text. The document format might be unusual.');
+    }
+    
+    return extractionResult.transactions.map(t => ({ ...t, id: function_uuid() }));
+}
+
 
 export async function getCategorizedSampleTransactions(): Promise<{ data?: CategorizedTransaction[]; error?: string }> {
   try {
@@ -20,20 +40,11 @@ export async function getCategorizedSampleTransactions(): Promise<{ data?: Categ
 export async function processAndCategorizePdf(pdfBase64: string): Promise<{ data?: CategorizedTransaction[], error?: string }> {
   let extractedTransactions: Transaction[] = [];
   try {
-    // Reconstruct the data URI
-    const dataUri = `data:application/pdf;base64,${pdfBase64}`;
-
-    const extractionResult = await extractTransactionsFromPdf({ document: dataUri });
-    
-    if (!extractionResult.transactions || extractionResult.transactions.length === 0) {
-      return { error: 'The AI could not extract any transactions from the PDF. The document might be empty, password-protected, or in a format the AI cannot read. Please try another file.' };
-    }
-    extractedTransactions = extractionResult.transactions.map(t => ({ ...t, id: function_uuid() }));
-    
+    extractedTransactions = await extractTransactionsFromPdf(pdfBase64);
   } catch (error) {
     console.error('Error during PDF transaction extraction:', error);
     const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
-    return { error: `Failed during the AI extraction step. The model may be unable to process this document. Details: ${errorMessage}` };
+    return { error: `Failed during the PDF parsing or AI extraction step. Details: ${errorMessage}` };
   }
 
   try {
@@ -60,7 +71,8 @@ async function categorizeAllTransactions(transactions: Transaction[]): Promise<{
   if (aiInput.length > 0) {
     const result = await categorizeTransactionsAI({ transactions: aiInput });
     categorizedExpenses = result.categorizedTransactions.map((ct, index) => {
-      // Assuming the AI returns transactions in the same order
+      // Assuming the AI returns transactions in the same order, which can be brittle.
+      // A better approach would be to have the AI return a unique identifier if possible.
       const originalTransaction = expensesToCategorize.find(t => t.description === ct.description && t.amount === ct.amount);
       return {
         ...(originalTransaction || expensesToCategorize[index]),
