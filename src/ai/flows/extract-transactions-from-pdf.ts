@@ -28,10 +28,27 @@ const ExtractTransactionsFromPdfOutputSchema = z.object({
 });
 export type ExtractTransactionsFromPdfOutput = z.infer<typeof ExtractTransactionsFromPdfOutputSchema>;
 
-
 export async function extractTransactionsFromPdf(input: ExtractTransactionsFromPdfInput): Promise<ExtractTransactionsFromPdfOutput> {
     return extractTransactionsFlow(input);
 }
+
+const prompt = ai.definePrompt({
+  name: 'extractTransactionsPrompt',
+  input: { schema: ExtractTransactionsFromPdfInputSchema },
+  output: { schema: ExtractTransactionsFromPdfOutputSchema },
+  prompt: `Você é um especialista financeiro. Sua tarefa é analisar o texto bruto de um extrato bancário e extrair todas as transações, listando cada gasto e cada entrada.
+
+REGRAS IMPORTANTES:
+1.  **Baseie-se Estritamente no Texto:** NÃO invente, infira ou alucine nenhuma informação. Extraia APENAS as transações que estão claramente presentes no texto fornecido.
+2.  **Formato do Valor:** Despesas (débitos) DEVEM ter um valor numérico negativo. Receitas (créditos) DEVEM ter um valor numérico positivo.
+3.  **Ignore o Resto:** Ignore saldos, resumos, ou qualquer outra informação que não seja uma transação individual.
+
+Texto do extrato:
+{{{extractedText}}}
+
+Gere um relatório JSON contendo a lista de transações extraídas.`,
+});
+
 
 const extractTransactionsFlow = ai.defineFlow(
   {
@@ -40,21 +57,7 @@ const extractTransactionsFlow = ai.defineFlow(
     outputSchema: ExtractTransactionsFromPdfOutputSchema,
   },
   async (input) => {
-    const { output } = await ai.generate({
-      model: 'googleai/gemini-2.5-flash',
-      prompt: `Faça um relatório financeiro de gastos e entradas com base no seguinte texto extraído de um extrato bancário. Ignore saldos e outras informações que não sejam transações individuais.
-
-Texto do extrato:
-{{{extractedText}}}`,
-      output: {
-        schema: ExtractTransactionsFromPdfOutputSchema,
-        format: 'json'
-      },
-      config: {
-        temperature: 0.1
-      }
-    });
-
+    const { output } = await prompt(input);
     return output!;
   }
 );
