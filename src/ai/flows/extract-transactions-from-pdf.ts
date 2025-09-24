@@ -12,19 +12,19 @@ import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
 const TransactionSchema = z.object({
-  date: z.string().describe('The date of the transaction in YYYY-MM-DD format.'),
-  amount: z.number().describe('The amount of the transaction. Crucially, this value must be negative for expenses/debits and positive for income/credits.'),
-  description: z.string().describe('A description of the transaction.'),
-  type: z.enum(['income', 'expense']).describe('The type of transaction. "income" for credits/deposits, "expense" for debits/withdrawals.'),
+  date: z.string().describe('A data da transação no formato YYYY-MM-DD.'),
+  amount: z.number().describe('O valor da transação. Crucialmente, este valor deve ser negativo para despesas/débitos e positivo para receitas/créditos.'),
+  description: z.string().describe('A descrição da transação.'),
+  type: z.enum(['income', 'expense']).describe('O tipo da transação. "income" para créditos/depósitos, "expense" para débitos/saques.'),
 });
 
 const ExtractTransactionsFromPdfInputSchema = z.object({
-  extractedText: z.string().describe("Raw text extracted from a bank statement PDF."),
+  extractedText: z.string().describe("Texto bruto extraído de um extrato bancário em PDF."),
 });
 export type ExtractTransactionsFromPdfInput = z.infer<typeof ExtractTransactionsFromPdfInputSchema>;
 
 const ExtractTransactionsFromPdfOutputSchema = z.object({
-  transactions: z.array(TransactionSchema).describe('An array of extracted transactions.'),
+  transactions: z.array(TransactionSchema).describe('Uma lista de transações extraídas.'),
 });
 export type ExtractTransactionsFromPdfOutput = z.infer<typeof ExtractTransactionsFromPdfOutputSchema>;
 
@@ -42,16 +42,17 @@ const extractTransactionsFlow = ai.defineFlow(
   async (input) => {
     const { output } = await ai.generate({
       model: 'googleai/gemini-2.5-flash',
-      prompt: `You are a financial expert specializing in parsing raw text from bank statements.
-        You will be given a block of text extracted from a PDF. Analyze the text to correctly identify the date, description, amount, and type for each transaction.
-        Return the data in the specified JSON format.
+      prompt: `Você é um especialista financeiro especializado em analisar texto bruto de extratos bancários.
+        Você receberá um bloco de texto extraído de um PDF. Analise o texto para identificar corretamente a data, descrição, valor e tipo de cada transação.
+        Retorne os dados no formato JSON especificado.
 
-        IMPORTANT RULES:
-        - The date for each transaction MUST be in YYYY-MM-DD format.
-        - The 'amount' MUST be a negative number for expenses (debits, withdrawals, payments) and a positive number for income (credits, deposits).
-        - The 'type' MUST be 'income' for credits/deposits and 'expense' for debits/withdrawals.
+        REGRAS IMPORTANTES:
+        - A data de cada transação DEVE estar no formato YYYY-MM-DD. Se o ano não for especificado, assuma o ano atual.
+        - O campo 'amount' (valor) DEVE ser um número negativo para despesas (débitos, saques, pagamentos) e um número positivo para receitas (créditos, depósitos).
+        - O campo 'type' (tipo) DEVE ser 'income' para créditos/depósitos e 'expense' para débitos/saques.
+        - Ignore linhas que não são transações, como saldos, resumos ou cabeçalhos.
 
-        Extracted Text:
+        Texto Extraído:
         {{{extractedText}}}
       `,
       output: {
