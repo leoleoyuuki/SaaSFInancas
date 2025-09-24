@@ -42,18 +42,15 @@ const extractTransactionsFlow = ai.defineFlow(
   async (input) => {
     const { output } = await ai.generate({
       model: 'googleai/gemini-2.5-flash',
-      prompt: `Sua tarefa é atuar como uma ferramenta de extração de dados. Você receberá um texto não estruturado de um extrato bancário e deverá convertê-lo em um relatório JSON estruturado, listando cada gasto e cada entrada.
+      prompt: `Você é um especialista em finanças. Sua tarefa é analisar o texto de um extrato bancário e extrair todas as transações, formatando-as como um objeto JSON.
 
-        REGRAS ABSOLUTAS:
-        1.  **NÃO INVENTE DADOS:** Sua resposta DEVE se basear estrita e unicamente nas informações presentes no "Texto Extraído". Se uma informação não estiver no texto, não a inclua. Não adicione transações que não existam no texto.
-        2.  **DATA:** A data de cada transação DEVE estar no formato YYYY-MM-DD. Se o ano não for especificado, assuma o ano atual.
-        3.  **VALOR (AMOUNT):** O campo 'amount' DEVE ser um número. Use um valor NEGATIVO para despesas (débitos, saques, pagamentos) e um valor POSITIVO para receitas (créditos, depósitos).
-        4.  **TIPO (TYPE):** O campo 'type' DEVE ser 'expense' para despesas e 'income' para receitas.
-        5.  **IGNORAR LIXO:** Ignore cabeçalhos, saldos resumidos, números de página e qualquer outra linha que não represente uma transação individual.
+        REGRAS IMPORTANTES:
+        - A data deve estar no formato YYYY-MM-DD.
+        - O valor (amount) DEVE ser um número NEGATIVO para despesas e POSITIVO para receitas.
+        - O tipo (type) deve ser 'expense' para despesas e 'income' para receitas.
+        - Ignore saldos, resumos e outras informações que não sejam transações individuais.
 
-        Analise o texto abaixo e crie uma lista JSON de transações.
-
-        Texto Extraído:
+        Texto do extrato:
         {{{extractedText}}}
       `,
       output: {
