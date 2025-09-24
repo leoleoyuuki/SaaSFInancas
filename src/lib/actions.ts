@@ -1,27 +1,10 @@
 'use server';
 
 import { categorizeTransactions as categorizeTransactionsAI } from '@/ai/flows/categorize-transactions-ai';
-import { extractTransactionsFromText } from '@/ai/flows/extract-transactions-from-text';
+import { extractTransactionsFromPdf } from '@/ai/flows/extract-transactions-from-pdf';
 import type { CategorizedTransaction, Transaction } from '@/lib/types';
 import { sampleTransactions } from '@/lib/data';
 import { function_uuid } from '@/lib/data';
-import pdf from 'pdf-parse';
-
-async function extractTransactionsFromPdf(pdfBase64: string): Promise<Transaction[]> {
-    const pdfBuffer = Buffer.from(pdfBase64, 'base64');
-    const pdfData = await pdf(pdfBuffer);
-    
-    if (!pdfData.text) {
-      return [];
-    }
-
-    const extractionResult = await extractTransactionsFromText({ textContent: pdfData.text });
-    return extractionResult.transactions.map(t => ({
-      ...t,
-      id: function_uuid()
-    }));
-}
-
 
 export async function getCategorizedSampleTransactions(): Promise<{ data?: CategorizedTransaction[]; error?: string }> {
   try {
@@ -37,14 +20,15 @@ export async function getCategorizedSampleTransactions(): Promise<{ data?: Categ
 export async function processAndCategorizePdf(pdfBase64: string): Promise<{ data?: CategorizedTransaction[], error?: string }> {
   let extractedTransactions: Transaction[] = [];
   try {
-    // Simulate a delay for loading states
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    // Reconstruct the data URI
+    const dataUri = `data:application/pdf;base64,${pdfBase64}`;
+
+    const extractionResult = await extractTransactionsFromPdf({ document: dataUri });
     
-    extractedTransactions = await extractTransactionsFromPdf(pdfBase64);
-    
-    if (!extractedTransactions || extractedTransactions.length === 0) {
+    if (!extractionResult.transactions || extractionResult.transactions.length === 0) {
       return { error: 'The AI could not extract any transactions from the PDF. The document might be empty, password-protected, or in a format the AI cannot read. Please try another file.' };
     }
+    extractedTransactions = extractionResult.transactions.map(t => ({ ...t, id: function_uuid() }));
     
   } catch (error) {
     console.error('Error during PDF transaction extraction:', error);
