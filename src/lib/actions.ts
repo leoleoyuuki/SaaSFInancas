@@ -1,41 +1,19 @@
 'use server';
 
 import { categorizeTransactions as categorizeTransactionsAI } from '@/ai/flows/categorize-transactions-ai';
-import { extractTransactionsFromText } from '@/ai/flows/extract-transactions-from-text';
+import { extractTransactionsFromPdf } from '@/ai/flows/extract-transactions-from-pdf';
 import type { CategorizedTransaction, Transaction } from '@/lib/types';
 import { sampleTransactions } from '@/lib/data';
 import { function_uuid } from '@/lib/data';
 
-async function extractTextFromPdf(pdfBase64: string): Promise<string> {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/extract-text`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ pdfBase64 }),
-    });
-
-    const result = await response.json();
-
-    if (!response.ok) {
-        throw new Error(result.error || 'Failed to extract text from PDF.');
-    }
-
-    if (!result.text) {
-        throw new Error("Could not extract text from the PDF. The file might be empty or contain only images.");
-    }
-
-    return result.text;
-}
-
-
 async function extractTransactions(pdfBase64: string): Promise<Transaction[]> {
-    const textContent = await extractTextFromPdf(pdfBase64);
+    // Reconstruct the data URI
+    const pdfDataUri = `data:application/pdf;base64,${pdfBase64}`;
     
-    const extractionResult = await extractTransactionsFromText({ textContent });
+    const extractionResult = await extractTransactionsFromPdf({ pdfDataUri });
     
     if (!extractionResult.transactions || extractionResult.transactions.length === 0) {
-      throw new Error('The AI could not extract any transactions from the PDF text. The document format might be unusual.');
+      throw new Error('The AI could not extract any transactions from the PDF. The document format might be unusual or unsupported.');
     }
     
     return extractionResult.transactions.map(t => ({ ...t, id: function_uuid() }));
@@ -60,13 +38,6 @@ export async function processAndCategorizePdf(pdfBase64: string): Promise<{ data
   } catch (error) {
     console.error('Error processing PDF:', error);
     const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
-    // Provide more specific error messages based on the step.
-    if (errorMessage.includes('extract text')) {
-         return { error: `Failed during the PDF parsing step. Details: ${errorMessage}` };
-    }
-     if (errorMessage.includes('extract any transactions')) {
-         return { error: `Failed during the AI extraction step after parsing the PDF. Details: ${errorMessage}` };
-    }
     return { error: `An unexpected error occurred during PDF processing: ${errorMessage}` };
   }
 }
