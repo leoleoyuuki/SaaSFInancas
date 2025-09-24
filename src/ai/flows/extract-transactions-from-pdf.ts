@@ -42,15 +42,16 @@ const extractTransactionsFlow = ai.defineFlow(
   async (input) => {
     const { output } = await ai.generate({
       model: 'googleai/gemini-2.5-flash',
-      prompt: `Você é um especialista financeiro especializado em analisar texto bruto de extratos bancários.
-        Você receberá um bloco de texto extraído de um PDF. Analise o texto para identificar corretamente a data, descrição, valor e tipo de cada transação.
-        Retorne os dados no formato JSON especificado.
+      prompt: `Sua tarefa é atuar como uma ferramenta de extração de dados. Você receberá um texto não estruturado de um extrato bancário e deverá convertê-lo em um relatório JSON estruturado, listando cada gasto e cada entrada.
 
-        REGRAS IMPORTANTES:
-        - A data de cada transação DEVE estar no formato YYYY-MM-DD. Se o ano não for especificado, assuma o ano atual.
-        - O campo 'amount' (valor) DEVE ser um número negativo para despesas (débitos, saques, pagamentos) e um número positivo para receitas (créditos, depósitos).
-        - O campo 'type' (tipo) DEVE ser 'income' para créditos/depósitos e 'expense' para débitos/saques.
-        - Ignore linhas que não são transações, como saldos, resumos ou cabeçalhos.
+        REGRAS ABSOLUTAS:
+        1.  **NÃO INVENTE DADOS:** Sua resposta DEVE se basear estrita e unicamente nas informações presentes no "Texto Extraído". Se uma informação não estiver no texto, não a inclua. Não adicione transações que não existam no texto.
+        2.  **DATA:** A data de cada transação DEVE estar no formato YYYY-MM-DD. Se o ano não for especificado, assuma o ano atual.
+        3.  **VALOR (AMOUNT):** O campo 'amount' DEVE ser um número. Use um valor NEGATIVO para despesas (débitos, saques, pagamentos) e um valor POSITIVO para receitas (créditos, depósitos).
+        4.  **TIPO (TYPE):** O campo 'type' DEVE ser 'expense' para despesas e 'income' para receitas.
+        5.  **IGNORAR LIXO:** Ignore cabeçalhos, saldos resumidos, números de página e qualquer outra linha que não represente uma transação individual.
+
+        Analise o texto abaixo e crie uma lista JSON de transações.
 
         Texto Extraído:
         {{{extractedText}}}
