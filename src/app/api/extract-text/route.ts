@@ -12,6 +12,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Missing pdfBase64 data' }, { status: 400 });
     }
 
+    // Correctly convert the Base64 string to a binary Buffer.
+    // This is the critical fix.
     const pdfBuffer = Buffer.from(pdfBase64, 'base64');
     const data = await pdf(pdfBuffer);
     
