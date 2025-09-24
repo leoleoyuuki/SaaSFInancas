@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import pdf from "pdf-parse";
+import PDFParser from "pdf2json";
 
 export async function POST(request: Request) {
   try {
@@ -10,13 +10,26 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Nenhum arquivo enviado." }, { status: 400 });
     }
 
-    // Converte o File da Web API em um Buffer do Node.js
     const arrayBuffer = await file.arrayBuffer();
     const pdfBuffer = Buffer.from(arrayBuffer);
     
-    const data = await pdf(pdfBuffer);
+    const pdfParser = new PDFParser(this, 1);
+
+    const text = await new Promise<string>((resolve, reject) => {
+        pdfParser.on("pdfParser_dataError", (errData: any) => {
+            console.error('Error parsing PDF:', errData.parserError);
+            reject(new Error('Erro ao processar o PDF.'));
+        });
+
+        pdfParser.on("pdfParser_dataReady", () => {
+            const rawText = pdfParser.getRawTextContent();
+            resolve(rawText);
+        });
+
+        pdfParser.parseBuffer(pdfBuffer);
+    });
     
-    return NextResponse.json({ text: data.text });
+    return NextResponse.json({ text });
   } catch (error: any) {
     console.error('Error in /api/extract-text:', error);
     return NextResponse.json(
