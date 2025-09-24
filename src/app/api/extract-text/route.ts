@@ -1,9 +1,5 @@
 import { NextResponse } from 'next/server';
-import * as pdfjs from 'pdfjs-dist/legacy/build/pdf.js';
-
-// This is required for the library to work in a Node.js environment.
-// @ts-ignore
-pdfjs.GlobalWorkerOptions.workerSrc = `../../../../node_modules/pdfjs-dist/legacy/build/pdf.worker.js`;
+import * as pdfjs from 'pdfjs-dist';
 
 export async function POST(request: Request) {
   try {
