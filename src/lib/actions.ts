@@ -1,44 +1,17 @@
 'use server';
 
 import { categorizeTransactions as categorizeTransactionsAI } from '@/ai/flows/categorize-transactions-ai';
-import { extractTransactionsFromPdf as extractTransactionsFromText } from '@/ai/flows/extract-transactions-from-pdf';
+import { extractTransactionsFromPdf } from '@/ai/flows/extract-transactions-from-pdf';
 import type { CategorizedTransaction, Transaction } from '@/lib/types';
 import { sampleTransactions } from '@/lib/data';
 import { function_uuid } from '@/lib/data';
 
-async function extractTextFromPdf(pdfBase64: string): Promise<string> {
-    // We must fetch from the absolute URL of the API route
-    const url = process.env.NODE_ENV === 'development'
-      ? 'http://localhost:9002/api/extract-text'
-      : (process.env.NEXT_PUBLIC_URL || '') + '/api/extract-text'; // You'll need to set NEXT_PUBLIC_URL in your environment variables for production
-
-    if (!url) {
-        throw new Error("NEXT_PUBLIC_URL is not set in environment variables for production.");
-    }
-
-    const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ pdfBase64 }),
-    });
-
-    if (!response.ok) {
-        const errorBody = await response.json().catch(() => ({ error: 'Failed to read error response from text extraction API.' }));
-        throw new Error(`Failed to extract text from PDF: ${errorBody.error || response.statusText}`);
-    }
-
-    const result = await response.json();
-    return result.text;
-}
-
-
-async function extractTransactions(text: string): Promise<Transaction[]> {
-    const extractionResult = await extractTransactionsFromText({ text });
+async function extractTransactions(pdfBase64: string): Promise<Transaction[]> {
+    const pdfDataUri = `data:application/pdf;base64,${pdfBase64}`;
+    const extractionResult = await extractTransactionsFromPdf({ pdfDataUri });
     
     if (!extractionResult.transactions || extractionResult.transactions.length === 0) {
-      throw new Error('The AI could not extract any transactions from the text. The document format might be unusual or unsupported.');
+      throw new Error('The AI could not extract any transactions from the PDF. The document format might be unusual or unsupported.');
     }
     
     return extractionResult.transactions.map(t => ({ ...t, id: function_uuid() }));
@@ -58,8 +31,7 @@ export async function getCategorizedSampleTransactions(): Promise<{ data?: Categ
 
 export async function processAndCategorizePdf(pdfBase64: string): Promise<{ data?: CategorizedTransaction[]; error?: string }> {
   try {
-    const extractedText = await extractTextFromPdf(pdfBase64);
-    const extractedTransactions = await extractTransactions(extractedText);
+    const extractedTransactions = await extractTransactions(pdfBase64);
     return await categorizeAllTransactions(extractedTransactions);
   } catch (error) {
     console.error('Error processing PDF:', error);
