@@ -7,25 +7,14 @@ import { sampleTransactions } from '@/lib/data';
 import { function_uuid } from '@/lib/data';
 
 async function extractTransactions(pdfBase64: string): Promise<Transaction[]> {
-    // 1. Call the API route to extract text
-    const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/extract-text`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ pdfBase64 }),
-    });
+    // 1. Prepare the Data URI for the multimodal AI model
+    const pdfDataUri = `data:application/pdf;base64,${pdfBase64}`;
 
-    if (!response.ok) {
-        const errorBody = await response.json();
-        throw new Error(`Failed to extract text from PDF: ${errorBody.error || 'Unknown error'}`);
-    }
-
-    const { text } = await response.json();
-
-    // 2. Send the extracted text to the AI flow
-    const extractionResult = await extractTransactionsFromPdf({ text });
+    // 2. Send the PDF to the AI flow
+    const extractionResult = await extractTransactionsFromPdf({ pdfDataUri });
     
     if (!extractionResult.transactions || extractionResult.transactions.length === 0) {
-      throw new Error('The AI could not extract any transactions from the PDF text. The document format might be unusual or unsupported.');
+      throw new Error('The AI could not extract any transactions from the PDF. The document format might be unusual or unsupported.');
     }
     
     return extractionResult.transactions.map(t => ({ ...t, id: function_uuid() }));
