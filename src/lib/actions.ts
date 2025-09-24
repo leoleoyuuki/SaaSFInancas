@@ -6,16 +6,13 @@ import type { CategorizedTransaction, Transaction } from '@/lib/types';
 import { sampleTransactions } from '@/lib/data';
 import { function_uuid } from '@/lib/data';
 
-async function extractTransactions(pdfBase64: string): Promise<Transaction[]> {
+async function extractTransactions(formData: FormData): Promise<Transaction[]> {
   // Use an absolute URL for the API route to ensure it works in all environments
   const url = new URL('/api/extract-text', process.env.NEXT_PUBLIC_URL || 'http://localhost:9002');
 
   const response = await fetch(url.toString(), {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ pdfBase64 }),
+    body: formData,
   });
 
   const result = await response.json();
@@ -46,9 +43,9 @@ export async function getCategorizedSampleTransactions(): Promise<{ data?: Categ
   }
 }
 
-export async function processAndCategorizePdf(pdfBase64: string): Promise<{ data?: CategorizedTransaction[]; error?: string }> {
+export async function processAndCategorizePdf(formData: FormData): Promise<{ data?: CategorizedTransaction[]; error?: string }> {
   try {
-    const extractedTransactions = await extractTransactions(pdfBase64);
+    const extractedTransactions = await extractTransactions(formData);
     return await categorizeAllTransactions(extractedTransactions);
   } catch (error) {
     console.error('Error processing PDF:', error);

@@ -5,16 +5,17 @@ const pdf = (await import('pdf-parse')).default;
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
-    const { pdfBase64 } = body;
+    const formData = await request.formData();
+    const file = formData.get('file') as File;
 
-    if (!pdfBase64) {
-      return NextResponse.json({ error: 'Missing pdfBase64 data' }, { status: 400 });
+    if (!file) {
+      return NextResponse.json({ error: 'Nenhum arquivo enviado.' }, { status: 400 });
     }
-
-    // Correctly convert the Base64 string to a binary Buffer.
-    // This is the critical fix.
-    const pdfBuffer = Buffer.from(pdfBase64, 'base64');
+    
+    // Convert the File (Web API) into a Buffer (Node.js)
+    const arrayBuffer = await file.arrayBuffer();
+    const pdfBuffer = Buffer.from(arrayBuffer);
+    
     const data = await pdf(pdfBuffer);
     
     return NextResponse.json({ text: data.text });
