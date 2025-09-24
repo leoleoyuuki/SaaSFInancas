@@ -6,19 +6,31 @@ import type { CategorizedTransaction, Transaction } from '@/lib/types';
 import { sampleTransactions } from '@/lib/data';
 import { function_uuid } from '@/lib/data';
 
-// Using require inside the function to avoid Next.js build errors with pdf-parse.
-async function extractTextFromPdfBase64(pdfBase64: string): Promise<string> {
-    const pdf = require('pdf-parse');
-    const pdfBuffer = Buffer.from(pdfBase64, 'base64');
-    const data = await pdf(pdfBuffer);
-    if (!data.text) {
+async function extractTextFromPdf(pdfBase64: string): Promise<string> {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/extract-text`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ pdfBase64 }),
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+        throw new Error(result.error || 'Failed to extract text from PDF.');
+    }
+
+    if (!result.text) {
         throw new Error("Could not extract text from the PDF. The file might be empty or contain only images.");
     }
-    return data.text;
+
+    return result.text;
 }
 
-async function extractTransactionsFromPdf(pdfBase64: string): Promise<Transaction[]> {
-    const textContent = await extractTextFromPdfBase64(pdfBase64);
+
+async function extractTransactions(pdfBase64: string): Promise<Transaction[]> {
+    const textContent = await extractTextFromPdf(pdfBase64);
     
     const extractionResult = await extractTransactionsFromText({ textContent });
     
@@ -43,7 +55,7 @@ export async function getCategorizedSampleTransactions(): Promise<{ data?: Categ
 
 export async function processAndCategorizePdf(pdfBase64: string): Promise<{ data?: CategorizedTransaction[], error?: string }> {
   try {
-    const extractedTransactions = await extractTransactionsFromPdf(pdfBase64);
+    const extractedTransactions = await extractTransactions(pdfBase64);
     return await categorizeAllTransactions(extractedTransactions);
   } catch (error) {
     console.error('Error processing PDF:', error);
