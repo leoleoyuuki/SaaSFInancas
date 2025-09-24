@@ -1,9 +1,9 @@
 'use server';
 
 /**
- * @fileOverview A Genkit flow for extracting transactions from a PDF file.
+ * @fileOverview A Genkit flow for extracting transactions from raw text.
  *
- * - extractTransactionsFromPdf - A function that takes a PDF Data URI and extracts transaction data.
+ * - extractTransactionsFromPdf - A function that takes raw text and extracts transaction data.
  * - ExtractTransactionsFromPdfInput - The input type for the extractTransactionsFromPdf function.
  * - ExtractTransactionsFromPdfOutput - The return type for the extractTransactionsFromPdf function.
  */
@@ -19,7 +19,7 @@ const TransactionSchema = z.object({
 });
 
 const ExtractTransactionsFromPdfInputSchema = z.object({
-  pdfDataUri: z.string().describe("A bank statement PDF, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:application/pdf;base64,<encoded_data>'."),
+  text: z.string().describe("The raw text content extracted from a bank statement."),
 });
 export type ExtractTransactionsFromPdfInput = z.infer<typeof ExtractTransactionsFromPdfInputSchema>;
 
@@ -42,14 +42,14 @@ const extractTransactionsFlow = ai.defineFlow(
   async (input) => {
     const { output } = await ai.generate({
       model: 'googleai/gemini-2.5-flash',
-      prompt: `You are a financial expert specializing in extracting transaction data from PDF bank statements.
-        You will be given a PDF document and you need to extract all transactions from it.
-        Analyze the document layout to correctly identify the date, description, amount, and type (income or expense) for each transaction.
+      prompt: `You are a financial expert specializing in extracting transaction data from raw text extracted from a bank statement.
+        You will be given a block of text and you need to extract all transactions from it.
+        Analyze the text to correctly identify the date, description, amount, and type (income or expense) for each transaction.
         For the transaction type, deposits or credits are 'income', and withdrawals, payments, or debits are 'expense'.
         Return the data in the specified JSON format.
 
-        PDF Document:
-        {{media url=pdfDataUri}}
+        Text Content:
+        {{{text}}}
       `,
       output: {
         schema: ExtractTransactionsFromPdfOutputSchema,
