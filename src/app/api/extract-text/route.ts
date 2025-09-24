@@ -5,16 +5,16 @@ const pdf = (await import('pdf-parse')).default;
 
 export async function POST(request: Request) {
   try {
-    const formData = await request.formData();
-    const file = formData.get('file') as File;
+    const body = await request.json();
+    const { pdfBase64 } = body;
 
-    if (!file) {
-      return NextResponse.json({ error: 'Nenhum arquivo enviado.' }, { status: 400 });
+    if (!pdfBase64) {
+      return NextResponse.json({ error: 'Nenhum dado pdfBase64 enviado.' }, { status: 400 });
     }
     
-    // Convert the File (Web API) into a Buffer (Node.js)
-    const arrayBuffer = await file.arrayBuffer();
-    const pdfBuffer = Buffer.from(arrayBuffer);
+    // pdf-parse espera um Buffer.
+    // O segundo argumento 'base64' é crucial para a conversão correta.
+    const pdfBuffer = Buffer.from(pdfBase64, 'base64');
     
     const data = await pdf(pdfBuffer);
     
@@ -22,7 +22,7 @@ export async function POST(request: Request) {
   } catch (error: any) {
     console.error('Error in /api/extract-text:', error);
     return NextResponse.json(
-      { error: error.message || 'An unknown error occurred during PDF parsing.' },
+      { error: error.message || 'Ocorreu um erro desconhecido durante a análise do PDF.' },
       { status: 500 }
     );
   }

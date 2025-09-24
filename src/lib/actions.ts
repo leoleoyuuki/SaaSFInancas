@@ -6,28 +6,31 @@ import type { CategorizedTransaction, Transaction } from '@/lib/types';
 import { sampleTransactions } from '@/lib/data';
 import { function_uuid } from '@/lib/data';
 
-async function extractTransactions(formData: FormData): Promise<Transaction[]> {
-  // Use an absolute URL for the API route to ensure it works in all environments
+async function extractTransactions(pdfBase64: string): Promise<Transaction[]> {
+  // Use uma URL absoluta para a rota da API para garantir que funcione em todos os ambientes
   const url = new URL('/api/extract-text', process.env.NEXT_PUBLIC_URL || 'http://localhost:9002');
 
   const response = await fetch(url.toString(), {
     method: 'POST',
-    body: formData,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ pdfBase64 }),
   });
 
   const result = await response.json();
 
   if (!response.ok) {
-    throw new Error(result.error || 'Failed to extract text from PDF.');
+    throw new Error(result.error || 'Falha ao extrair texto do PDF.');
   }
 
   const extractionResult = await extractTransactionsFromPdf({ extractedText: result.text });
     
   if (!extractionResult.transactions || extractionResult.transactions.length === 0) {
-    throw new Error('The AI could not extract any transactions from the text. The format might be unusual or unsupported.');
+    throw new Error('A IA não conseguiu extrair nenhuma transação do texto. O formato pode ser incomum ou não suportado.');
   }
     
-  // Ensure every transaction has a unique ID, matching the sample data format.
+  // Garante que cada transação tenha um ID único, correspondendo ao formato dos dados de exemplo.
   return extractionResult.transactions.map(t => ({ ...t, id: function_uuid() }));
 }
 
@@ -43,9 +46,9 @@ export async function getCategorizedSampleTransactions(): Promise<{ data?: Categ
   }
 }
 
-export async function processAndCategorizePdf(formData: FormData): Promise<{ data?: CategorizedTransaction[]; error?: string }> {
+export async function processAndCategorizePdf(pdfBase64: string): Promise<{ data?: CategorizedTransaction[]; error?: string }> {
   try {
-    const extractedTransactions = await extractTransactions(formData);
+    const extractedTransactions = await extractTransactions(pdfBase64);
     return await categorizeAllTransactions(extractedTransactions);
   } catch (error) {
     console.error('Error processing PDF:', error);
@@ -56,11 +59,11 @@ export async function processAndCategorizePdf(formData: FormData): Promise<{ dat
 
 async function categorizeAllTransactions(transactions: Transaction[]): Promise<{ data?: CategorizedTransaction[]; error?: string }> {
   try {
-      // Filter out income, as we don't need to categorize it.
+      // Filtra as receitas, pois não precisamos categorizá-las.
     const expensesToCategorize = transactions.filter(t => t.type === 'expense');
     
     const aiInput = expensesToCategorize.map(({ date, amount, description }) => ({
-      date: new Date(date).toLocaleDateString(), // Format date for AI
+      date: new Date(date).toLocaleDateString(), // Formata a data para a IA
       amount,
       description,
     }));

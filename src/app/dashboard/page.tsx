@@ -36,21 +36,31 @@ export default function DashboardPage() {
   const handlePdfUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      const formData = new FormData();
-      formData.append('file', file);
-      
-      startTransition(async () => {
-        const result = await processAndCategorizePdf(formData);
-        if (result.data) {
-          setTransactions(result.data);
-        } else if (result.error) {
-          toast({
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        const base64 = (reader.result as string).split(',')[1];
+        startTransition(async () => {
+          const result = await processAndCategorizePdf(base64);
+          if (result.data) {
+            setTransactions(result.data);
+          } else if (result.error) {
+            toast({
+              variant: "destructive",
+              title: "Uh oh! Something went wrong.",
+              description: result.error,
+            });
+          }
+        });
+      };
+      reader.onerror = (error) => {
+         toast({
             variant: "destructive",
-            title: "Uh oh! Something went wrong.",
-            description: result.error,
+            title: "Failed to read file",
+            description: "There was an issue reading your PDF file.",
           });
-        }
-      });
+          console.error("FileReader error: ", error);
+      };
     }
      // Reset file input
     if(fileInputRef.current) {
