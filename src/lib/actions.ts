@@ -26,6 +26,7 @@ async function extractTransactions(formData: FormData): Promise<Transaction[]> {
     throw new Error('A IA não conseguiu extrair nenhuma transação do texto. O formato pode ser incomum ou não suportado.');
   }
     
+  // Atribui um ID único a cada transação no momento da extração.
   return extractionResult.transactions.map(t => ({ ...t, id: function_uuid() }));
 }
 
@@ -55,21 +56,35 @@ async function categorizeAllTransactions(transactions: Transaction[]): Promise<{
   try {
     const expensesToCategorize = transactions.filter(t => t.type === 'expense');
     
+    // Mapeia transações originais (com ID) para a entrada da IA
     const aiInput = expensesToCategorize.map(({ date, amount, description }) => ({
       date: new Date(date).toLocaleDateString(),
       amount,
       description,
     }));
+    
+    // Cria um mapa para encontrar a transação original pelo índice
+    const expensesMap = new Map(expensesToCategorize.map((t, index) => [index, t]));
 
     let categorizedExpenses: CategorizedTransaction[] = [];
 
     if (aiInput.length > 0) {
       const result = await categorizeTransactionsAI({ transactions: aiInput });
+      
+      // Mapeia os resultados da IA de volta para as transações originais, preservando o ID original
       categorizedExpenses = result.categorizedTransactions.map((ct, index) => {
-        const originalTransaction = expensesToCategorize.find(t => t.description === ct.description && t.amount === ct.amount);
+        const originalTransaction = expensesMap.get(index);
+        if (!originalTransaction) {
+            // Fallback, embora isso não deva acontecer com a lógica atual
+            return {
+                ...ct,
+                type: 'expense',
+                id: function_uuid(), 
+                category: ct.category || 'Others',
+            };
+        }
         return {
-          ...(originalTransaction || expensesToCategorize[index]),
-          id: originalTransaction?.id || function_uuid(),
+          ...originalTransaction,
           category: ct.category,
         };
       });
