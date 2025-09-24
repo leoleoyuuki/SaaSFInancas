@@ -23,10 +23,6 @@ export default function DashboardPage() {
       const result = await getCategorizedSampleTransactions();
       if (result.data) {
         setTransactions(result.data);
-        toast({
-          title: "Success!",
-          description: "Sample transactions have been loaded and categorized.",
-        });
       } else if (result.error) {
         toast({
           variant: "destructive",
@@ -47,10 +43,6 @@ export default function DashboardPage() {
           const result = await processAndCategorizePdf(base64);
           if (result.data) {
             setTransactions(result.data);
-            toast({
-              title: "Success!",
-              description: "PDF processed and transactions categorized.",
-            });
           } else if (result.error) {
             toast({
               variant: "destructive",
@@ -135,7 +127,7 @@ export default function DashboardPage() {
               Upload PDF Statement
             </Button>
             <input type="file" ref={fileInputRef} onChange={handlePdfUpload} accept=".pdf" className="hidden" />
-            <Button onClick={handleUseSampleData} variant="secondary" className="mt-1">
+            <Button onClick={handleUseSampleData} variant="secondary">
               <FileText className="mr-2 h-4 w-4" />
               Use Sample Data
             </Button>

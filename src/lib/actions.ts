@@ -5,16 +5,20 @@ import { extractTransactionsFromText } from '@/ai/flows/extract-transactions-fro
 import type { CategorizedTransaction, Transaction } from '@/lib/types';
 import { sampleTransactions } from '@/lib/data';
 import { function_uuid } from '@/lib/data';
-import pdf from 'pdf-parse';
 
-async function extractTransactionsFromPdf(pdfBase64: string): Promise<Transaction[]> {
+// Using require inside the function to avoid Next.js build errors with pdf-parse.
+async function extractTextFromPdfBase64(pdfBase64: string): Promise<string> {
+    const pdf = require('pdf-parse');
     const pdfBuffer = Buffer.from(pdfBase64, 'base64');
     const data = await pdf(pdfBuffer);
-    const textContent = data.text;
-    
-    if (!textContent) {
+    if (!data.text) {
         throw new Error("Could not extract text from the PDF. The file might be empty or contain only images.");
     }
+    return data.text;
+}
+
+async function extractTransactionsFromPdf(pdfBase64: string): Promise<Transaction[]> {
+    const textContent = await extractTextFromPdfBase64(pdfBase64);
     
     const extractionResult = await extractTransactionsFromText({ textContent });
     
@@ -38,55 +42,58 @@ export async function getCategorizedSampleTransactions(): Promise<{ data?: Categ
 }
 
 export async function processAndCategorizePdf(pdfBase64: string): Promise<{ data?: CategorizedTransaction[], error?: string }> {
-  let extractedTransactions: Transaction[] = [];
   try {
-    extractedTransactions = await extractTransactionsFromPdf(pdfBase64);
-  } catch (error) {
-    console.error('Error during PDF transaction extraction:', error);
-    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
-    return { error: `Failed during the PDF parsing or AI extraction step. Details: ${errorMessage}` };
-  }
-
-  try {
+    const extractedTransactions = await extractTransactionsFromPdf(pdfBase64);
     return await categorizeAllTransactions(extractedTransactions);
   } catch (error) {
-    console.error('Error during transaction categorization:', error);
+    console.error('Error processing PDF:', error);
     const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
-    return { error: `Failed during the AI categorization step after transactions were extracted. Details: ${errorMessage}` };
+    // Provide more specific error messages based on the step.
+    if (errorMessage.includes('extract text')) {
+         return { error: `Failed during the PDF parsing step. Details: ${errorMessage}` };
+    }
+     if (errorMessage.includes('extract any transactions')) {
+         return { error: `Failed during the AI extraction step after parsing the PDF. Details: ${errorMessage}` };
+    }
+    return { error: `An unexpected error occurred during PDF processing: ${errorMessage}` };
   }
 }
 
 async function categorizeAllTransactions(transactions: Transaction[]): Promise<{ data?: CategorizedTransaction[]; error?: string }> {
-  // Filter out income, as we don't need to categorize it.
-  const expensesToCategorize = transactions.filter(t => t.type === 'expense');
-  
-  const aiInput = expensesToCategorize.map(({ date, amount, description }) => ({
-    date: new Date(date).toLocaleDateString(), // Format date for AI
-    amount,
-    description,
-  }));
+  try {
+      // Filter out income, as we don't need to categorize it.
+    const expensesToCategorize = transactions.filter(t => t.type === 'expense');
+    
+    const aiInput = expensesToCategorize.map(({ date, amount, description }) => ({
+      date: new Date(date).toLocaleDateString(), // Format date for AI
+      amount,
+      description,
+    }));
 
-  let categorizedExpenses: CategorizedTransaction[] = [];
+    let categorizedExpenses: CategorizedTransaction[] = [];
 
-  if (aiInput.length > 0) {
-    const result = await categorizeTransactionsAI({ transactions: aiInput });
-    categorizedExpenses = result.categorizedTransactions.map((ct, index) => {
-      // Assuming the AI returns transactions in the same order, which can be brittle.
-      // A better approach would be to have the AI return a unique identifier if possible.
-      const originalTransaction = expensesToCategorize.find(t => t.description === ct.description && t.amount === ct.amount);
-      return {
-        ...(originalTransaction || expensesToCategorize[index]),
-        id: originalTransaction?.id || function_uuid(),
-        category: ct.category,
-      };
-    });
+    if (aiInput.length > 0) {
+      const result = await categorizeTransactionsAI({ transactions: aiInput });
+      categorizedExpenses = result.categorizedTransactions.map((ct, index) => {
+        const originalTransaction = expensesToCategorize.find(t => t.description === ct.description && t.amount === ct.amount);
+        return {
+          ...(originalTransaction || expensesToCategorize[index]),
+          id: originalTransaction?.id || function_uuid(),
+          category: ct.category,
+        };
+      });
+    }
+
+    const incomeTransactions = transactions
+      .filter(t => t.type === 'income')
+      .map(t => ({ ...t, category: 'Income' as const }));
+
+    const allCategorized = [...incomeTransactions, ...categorizedExpenses].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    
+    return { data: allCategorized };
+  } catch (error) {
+     console.error('Error during transaction categorization:', error);
+     const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
+     return { error: `Failed during the AI categorization step after transactions were extracted. Details: ${errorMessage}` };
   }
-
-  const incomeTransactions = transactions
-    .filter(t => t.type === 'income')
-    .map(t => ({ ...t, category: 'Income' as const }));
-
-  const allCategorized = [...incomeTransactions, ...categorizedExpenses].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-  
-  return { data: allCategorized };
 }
