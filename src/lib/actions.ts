@@ -56,21 +56,14 @@ export async function getCategorizedSampleTransactions(): Promise<{ data?: Categ
   }
 }
 
-// TEMPORARY CHANGE FOR DEBUGGING
-export async function processAndCategorizePdf(pdfBase64: string): Promise<{ data?: CategorizedTransaction[], error?: string, text?: string }> {
+export async function processAndCategorizePdf(pdfBase64: string): Promise<{ data?: CategorizedTransaction[]; error?: string }> {
   try {
     const extractedText = await extractTextFromPdf(pdfBase64);
-    // Return the text to the client for the alert
-    return { text: extractedText };
-
-    // Original logic is commented out below
-    /*
     const extractedTransactions = await extractTransactions(extractedText);
     return await categorizeAllTransactions(extractedTransactions);
-    */
   } catch (error) {
     console.error('Error processing PDF:', error);
-    const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred during PDF processing: ${errorMessage}';
+    const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred during PDF processing.';
     return { error: `An unexpected error occurred during PDF processing: ${errorMessage}` };
   }
 }

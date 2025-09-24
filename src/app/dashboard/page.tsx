@@ -40,11 +40,9 @@ export default function DashboardPage() {
       reader.onload = (e) => {
         const base64 = (e.target?.result as string).split(',')[1];
         startTransition(async () => {
-          // Temporarily just get the text and alert it.
           const result = await processAndCategorizePdf(base64);
-          if (result.text) {
-            alert('Extracted PDF Content:\n\n' + result.text);
-            // NOTE: We are stopping here for debugging. The transactions state will not be updated.
+          if (result.data) {
+            setTransactions(result.data);
           } else if (result.error) {
             toast({
               variant: "destructive",
