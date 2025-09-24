@@ -1,9 +1,9 @@
 'use server';
 
 /**
- * @fileOverview A Genkit flow for extracting transactions from a raw text string or a PDF file.
+ * @fileOverview A Genkit flow for extracting transactions from a raw text string.
  *
- * - extractTransactionsFromText - A function that takes a raw text or PDF data URI and extracts transaction data.
+ * - extractTransactionsFromText - A function that takes raw text and extracts transaction data.
  * - ExtractTransactionsFromTextInput - The input type for the extractTransactionsFromText function.
  * - ExtractTransactionsFromTextOutput - The return type for the extractTransactionsFromText function.
  */
@@ -19,7 +19,7 @@ const TransactionSchema = z.object({
 });
 
 const ExtractTransactionsFromTextInputSchema = z.object({
-  textContent: z.string().describe('The raw text content from a bank statement, or a data URI for a PDF file.'),
+  textContent: z.string().describe('The raw text content from a bank statement.'),
 });
 export type ExtractTransactionsFromTextInput = z.infer<typeof ExtractTransactionsFromTextInputSchema>;
 
@@ -40,24 +40,16 @@ const extractTransactionsFlow = ai.defineFlow(
     outputSchema: ExtractTransactionsFromTextOutputSchema,
   },
   async (input) => {
-    const isDataUri = input.textContent.startsWith('data:');
-
-    const promptParts = [
-      {
-        text: `You are a financial expert specializing in extracting transaction data from documents.
+    const { output } = await ai.generate({
+      model: 'googleai/gemini-2.5-flash',
+      prompt: `You are a financial expert specializing in extracting transaction data from raw text.
         You will be given the content of a bank statement and you need to extract all transactions from it.
         Identify the date, description, amount, and type (income or expense) for each transaction.
         For the transaction type, deposits or credits are 'income', and withdrawals, payments, or debits are 'expense'.
-        Return the data in the specified JSON format.`,
-      },
-      isDataUri
-        ? { media: { url: input.textContent } }
-        : { text: `\n\nDocument Content:\n${input.textContent}` },
-    ];
+        Return the data in the specified JSON format.
 
-    const { output } = await ai.generate({
-      model: 'googleai/gemini-2.5-flash',
-      prompt: promptParts,
+        Document Content:
+        ${input.textContent}`,
       output: {
         schema: ExtractTransactionsFromTextOutputSchema,
       },

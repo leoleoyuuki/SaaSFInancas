@@ -5,9 +5,17 @@ import { extractTransactionsFromText } from '@/ai/flows/extract-transactions-fro
 import type { CategorizedTransaction, Transaction } from '@/lib/types';
 import { sampleTransactions } from '@/lib/data';
 import { function_uuid } from '@/lib/data';
+import pdf from 'pdf-parse';
 
 async function extractTransactionsFromPdf(pdfBase64: string): Promise<Transaction[]> {
-    const extractionResult = await extractTransactionsFromText({ textContent: `data:application/pdf;base64,${pdfBase64}` });
+    const pdfBuffer = Buffer.from(pdfBase64, 'base64');
+    const pdfData = await pdf(pdfBuffer);
+    
+    if (!pdfData.text) {
+      return [];
+    }
+
+    const extractionResult = await extractTransactionsFromText({ textContent: pdfData.text });
     return extractionResult.transactions.map(t => ({
       ...t,
       id: function_uuid()
