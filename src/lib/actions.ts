@@ -30,6 +30,7 @@ async function extractTransactions(pdfBase64: string): Promise<Transaction[]> {
     throw new Error('The AI could not extract any transactions from the text. The format might be unusual or unsupported.');
   }
     
+  // Ensure every transaction has a unique ID, matching the sample data format.
   return extractionResult.transactions.map(t => ({ ...t, id: function_uuid() }));
 }
 

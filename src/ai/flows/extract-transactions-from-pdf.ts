@@ -13,9 +13,9 @@ import {z} from 'genkit';
 
 const TransactionSchema = z.object({
   date: z.string().describe('The date of the transaction in YYYY-MM-DD format.'),
-  amount: z.number().describe('The amount of the transaction. Should be negative for expenses and positive for income.'),
+  amount: z.number().describe('The amount of the transaction. Crucially, this value must be negative for expenses/debits and positive for income/credits.'),
   description: z.string().describe('A description of the transaction.'),
-  type: z.enum(['income', 'expense']).describe('The type of transaction.'),
+  type: z.enum(['income', 'expense']).describe('The type of transaction. "income" for credits/deposits, "expense" for debits/withdrawals.'),
 });
 
 const ExtractTransactionsFromPdfInputSchema = z.object({
@@ -43,9 +43,13 @@ const extractTransactionsFlow = ai.defineFlow(
     const { output } = await ai.generate({
       model: 'googleai/gemini-2.5-flash',
       prompt: `You are a financial expert specializing in parsing raw text from bank statements.
-        You will be given a block of text extracted from a PDF. Analyze the text to correctly identify the date, description, amount, and type (income or expense) for each transaction.
-        Deposits or credits are 'income', and withdrawals, payments, or debits are 'expense'.
+        You will be given a block of text extracted from a PDF. Analyze the text to correctly identify the date, description, amount, and type for each transaction.
         Return the data in the specified JSON format.
+
+        IMPORTANT RULES:
+        - The date for each transaction MUST be in YYYY-MM-DD format.
+        - The 'amount' MUST be a negative number for expenses (debits, withdrawals, payments) and a positive number for income (credits, deposits).
+        - The 'type' MUST be 'income' for credits/deposits and 'expense' for debits/withdrawals.
 
         Extracted Text:
         {{{extractedText}}}
