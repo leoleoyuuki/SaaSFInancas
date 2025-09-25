@@ -100,7 +100,6 @@ export default function DashboardPage() {
     })).sort((a,b) => b.spending - a.spending);
   }, [transactions]);
 
-
   const DashboardSkeleton = () => (
     <div className="space-y-8">
       <div className="flex justify-center items-center flex-col gap-4 text-center">
@@ -109,6 +108,7 @@ export default function DashboardPage() {
         <p className="text-sm text-muted-foreground">This may take a moment. We're extracting and categorizing your transactions.</p>
       </div>
       <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
+        <Skeleton className="h-[126px]"/>
         <Skeleton className="h-[126px]"/>
         <Skeleton className="h-[126px]"/>
         <Skeleton className="h-[126px]"/>
@@ -121,40 +121,41 @@ export default function DashboardPage() {
     </div>
   )
 
-
   return (
-    <div className="space-y-6">
-      {!hasTransactions && !isPending && (
-        <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-muted-foreground/30 bg-card p-12 text-center h-[400px] shadow-sm">
-          <FileText className="mx-auto h-12 w-12 text-muted-foreground" />
-          <h3 className="mt-4 text-lg font-semibold font-headline">Get Started</h3>
-          <p className="mb-4 mt-2 text-sm text-muted-foreground">Upload a PDF bank statement or use sample data to see your financial overview.</p>
-          <div className="flex gap-4">
-            <Button onClick={() => fileInputRef.current?.click()} variant="default">
-              <Upload className="mr-2 h-4 w-4" />
-              Upload PDF Statement
-            </Button>
-            <input type="file" ref={fileInputRef} onChange={handlePdfUpload} accept=".pdf" className="hidden" />
-            <Button onClick={handleUseSampleData} variant="secondary">
-              <FileText className="mr-2 h-4 w-4" />
-              Use Sample Data
-            </Button>
+    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+      <div className="space-y-6">
+        {!hasTransactions && !isPending && (
+          <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-muted-foreground/30 bg-card p-12 text-center h-[400px] shadow-sm">
+            <FileText className="mx-auto h-12 w-12 text-muted-foreground" />
+            <h3 className="mt-4 text-lg font-semibold font-headline">Get Started</h3>
+            <p className="mb-4 mt-2 text-sm text-muted-foreground">Upload a PDF bank statement or use sample data to see your financial overview.</p>
+            <div className="flex gap-4">
+              <Button onClick={() => fileInputRef.current?.click()} variant="default">
+                <Upload className="mr-2 h-4 w-4" />
+                Upload PDF Statement
+              </Button>
+              <input type="file" ref={fileInputRef} onChange={handlePdfUpload} accept=".pdf" className="hidden" />
+              <Button onClick={handleUseSampleData} variant="secondary">
+                <FileText className="mr-2 h-4 w-4" />
+                Use Sample Data
+              </Button>
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {isPending && <DashboardSkeleton />}
+        {isPending && <DashboardSkeleton />}
 
-      {hasTransactions && !isPending && (
-        <div className="animate-in fade-in-50 duration-500 space-y-8">
-          <KpiCards summary={summary} />
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">
-            <SpendingPieChart data={categorySpending} className="lg:col-span-3" />
-            <IncomeExpenseBarChart summary={summary} className="lg:col-span-4" />
+        {hasTransactions && !isPending && (
+          <div className="animate-in fade-in-50 duration-500 space-y-8">
+            <KpiCards summary={summary} />
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">
+              <SpendingPieChart data={categorySpending} className="lg:col-span-3" />
+              <IncomeExpenseBarChart summary={summary} className="lg:col-span-4" />
+            </div>
+            <TransactionsTable transactions={transactions} setTransactions={setTransactions} />
           </div>
-          <TransactionsTable transactions={transactions} setTransactions={setTransactions} />
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }
