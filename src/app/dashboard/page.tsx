@@ -316,10 +316,10 @@ export default function DashboardPage() {
                 `}
                 </style>
                 <div className="print-content">
-                  <div className="grid">
-                    <div className="no-print">
-                      <KpiCards summary={summary} />
-                    </div>
+                  <div className="no-print">
+                    <KpiCards summary={summary} />
+                  </div>
+                  <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-7">
                     <SpendingPieChart data={categorySpending} className="lg:col-span-3" />
                     <IncomeExpenseBarChart summary={summary} className="lg:col-span-4" />
                   </div>
