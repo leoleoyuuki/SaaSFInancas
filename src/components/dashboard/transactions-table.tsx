@@ -30,9 +30,21 @@ type TransactionsTableProps = {
 
 export function TransactionsTable({ transactions, setTransactions }: TransactionsTableProps) {
   const handleCategoryChange = (transactionId: string, newCategory: Category) => {
-    const updatedTransactions = transactions.map(t =>
-      t.id === transactionId ? { ...t, category: newCategory } : t
-    );
+    const updatedTransactions = transactions.map(t => {
+      if (t.id === transactionId) {
+        const updatedTransaction = { ...t, category: newCategory };
+        
+        if (newCategory === 'Income') {
+          updatedTransaction.type = 'income';
+          updatedTransaction.amount = Math.abs(updatedTransaction.amount);
+        } else {
+          updatedTransaction.type = 'expense';
+          updatedTransaction.amount = -Math.abs(updatedTransaction.amount);
+        }
+        return updatedTransaction;
+      }
+      return t;
+    });
     setTransactions(updatedTransactions);
   };
 
