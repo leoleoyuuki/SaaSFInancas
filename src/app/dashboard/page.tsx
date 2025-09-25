@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useTransition, useMemo, useRef } from 'react';
-import { Loader2, FileText, Upload } from 'lucide-react';
+import { Loader2, FileText, Upload, Download, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import type { CategorizedTransaction } from '@/lib/types';
@@ -67,6 +67,34 @@ export default function DashboardPage() {
         fileInputRef.current.value = '';
     }
   };
+
+  const handleDownloadReport = () => {
+    try {
+      const jsonString = `data:text/json;charset=utf-8,${encodeURIComponent(
+        JSON.stringify(transactions, null, 2)
+      )}`;
+      const link = document.createElement("a");
+      link.href = jsonString;
+      link.download = "relatorio-financeflow.json";
+
+      link.click();
+       toast({
+          title: "Download Iniciado",
+          description: "O arquivo relatorio-financeflow.json foi salvo.",
+        });
+    } catch(error) {
+        const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred.";
+        toast({
+            variant: "destructive",
+            title: "Erro no Download",
+            description: `Não foi possível gerar o arquivo para download: ${errorMessage}`
+        });
+    }
+  }
+
+  const handleClearData = () => {
+    setTransactions([]);
+  }
   
   const hasTransactions = transactions.length > 0;
 
@@ -104,11 +132,10 @@ export default function DashboardPage() {
     <div className="space-y-8">
       <div className="flex justify-center items-center flex-col gap-4 text-center">
         <Loader2 className="h-12 w-12 animate-spin text-primary" />
-        <h3 className="text-lg font-semibold font-headline">Processing your data...</h3>
-        <p className="text-sm text-muted-foreground">This may take a moment. We're extracting and categorizing your transactions.</p>
+        <h3 className="text-lg font-semibold font-headline">Processando seu extrato...</h3>
+        <p className="text-sm text-muted-foreground">Aguarde um momento enquanto a I.A. extrai e categoriza suas transações.</p>
       </div>
-      <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
-        <Skeleton className="h-[126px]"/>
+      <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-3">
         <Skeleton className="h-[126px]"/>
         <Skeleton className="h-[126px]"/>
         <Skeleton className="h-[126px]"/>
@@ -122,40 +149,52 @@ export default function DashboardPage() {
   )
 
   return (
-    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
-      <div className="space-y-6">
-        {!hasTransactions && !isPending && (
-          <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-muted-foreground/30 bg-card p-12 text-center h-[400px] shadow-sm">
-            <FileText className="mx-auto h-12 w-12 text-muted-foreground" />
-            <h3 className="mt-4 text-lg font-semibold font-headline">Get Started</h3>
-            <p className="mb-4 mt-2 text-sm text-muted-foreground">Upload a PDF bank statement or use sample data to see your financial overview.</p>
-            <div className="flex gap-4">
-              <Button onClick={() => fileInputRef.current?.click()} variant="default">
-                <Upload className="mr-2 h-4 w-4" />
-                Upload PDF Statement
-              </Button>
-              <input type="file" ref={fileInputRef} onChange={handlePdfUpload} accept=".pdf" className="hidden" />
-              <Button onClick={handleUseSampleData} variant="secondary">
-                <FileText className="mr-2 h-4 w-4" />
-                Use Sample Data
-              </Button>
-            </div>
+    <div className="mx-auto w-full space-y-6">
+       {!hasTransactions && !isPending && (
+        <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-muted-foreground/30 bg-card p-12 text-center h-[calc(100vh-200px)] shadow-sm">
+          <FileText className="mx-auto h-12 w-12 text-muted-foreground" />
+          <h3 className="mt-4 text-lg font-semibold font-headline">Comece a sua análise</h3>
+          <p className="mb-4 mt-2 text-sm text-muted-foreground">Faça o upload de um extrato bancário em PDF ou use nossos dados de exemplo para ver a mágica acontecer.</p>
+          <div className="flex gap-4">
+            <Button onClick={() => fileInputRef.current?.click()} variant="default">
+              <Upload className="mr-2 h-4 w-4" />
+              Enviar Extrato PDF
+            </Button>
+            <input type="file" ref={fileInputRef} onChange={handlePdfUpload} accept=".pdf" className="hidden" />
+            <Button onClick={handleUseSampleData} variant="secondary">
+              <FileText className="mr-2 h-4 w-4" />
+              Usar Dados de Exemplo
+            </Button>
           </div>
-        )}
+        </div>
+      )}
 
-        {isPending && <DashboardSkeleton />}
+      {isPending && <DashboardSkeleton />}
 
-        {hasTransactions && !isPending && (
-          <div className="animate-in fade-in-50 duration-500 space-y-8">
+      {hasTransactions && !isPending && (
+        <div className="animate-in fade-in-50 duration-500 space-y-8">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 bg-card border rounded-lg shadow-sm">
+                <h3 className="text-lg font-semibold font-headline">Seu Dashboard Financeiro</h3>
+                <div className="flex gap-2">
+                    <Button onClick={handleDownloadReport} variant="outline">
+                        <Download className="mr-2 h-4 w-4" />
+                        Download do Relatório
+                    </Button>
+                    <Button onClick={handleClearData} variant="destructive">
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        Limpar Dados
+                    </Button>
+                </div>
+            </div>
+
             <KpiCards summary={summary} />
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">
               <SpendingPieChart data={categorySpending} className="lg:col-span-3" />
               <IncomeExpenseBarChart summary={summary} className="lg:col-span-4" />
             </div>
             <TransactionsTable transactions={transactions} setTransactions={setTransactions} />
-          </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }
