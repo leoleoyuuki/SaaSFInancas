@@ -43,13 +43,11 @@ const chartConfig = {
   },
   Shopping: {
     label: 'Shopping',
-    color: 'hsl(var(--chart-1))',
-    theme: { dark: 'hsl(var(--chart-2))' },
+    color: 'hsl(260, 60%, 55%)',
   },
   Bills: {
     label: 'Bills',
-    color: 'hsl(var(--chart-2))',
-    theme: { dark: 'hsl(var(--chart-3))' },
+    color: 'hsl(310, 70%, 50%)',
   },
   Others: {
     label: 'Others',
