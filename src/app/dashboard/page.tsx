@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useTransition, useMemo, useRef } from 'react';
-import { useReactToPrint } from 'react-to-print';
 import { Loader2, FileText, Upload, Download, Trash2, FileJson, ChevronDown, FileUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -27,11 +26,9 @@ export default function DashboardPage() {
   const jsonInputRef = useRef<HTMLInputElement>(null);
   const printableContentRef = useRef(null);
 
-  const handlePrint = useReactToPrint({
-    content: () => printableContentRef.current,
-    documentTitle: "relatorio-financeflow",
-    onAfterPrint: () => toast({ title: "Relatório exportado para PDF." }),
-  });
+  const handlePrint = () => {
+    window.print();
+  };
 
 
   const handleUseSampleData = () => {
@@ -238,7 +235,7 @@ export default function DashboardPage() {
 
       {hasTransactions && !isPending && (
         <div className="animate-in fade-in-50 duration-500 space-y-8">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 bg-card border rounded-lg shadow-sm">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 bg-card border rounded-lg shadow-sm no-print">
                 <h3 className="text-lg font-semibold font-headline">Seu Dashboard Financeiro</h3>
                 <div className="flex gap-2">
                     <DropdownMenu>
@@ -254,7 +251,7 @@ export default function DashboardPage() {
                            <FileJson className="mr-2 h-4 w-4" />
                            JSON (para importar)
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={handlePrint}>
+                        <DropdownMenuItem onSelect={handlePrint}>
                            <FileText className="mr-2 h-4 w-4" />
                            PDF (para visualizar)
                         </DropdownMenuItem>
@@ -271,10 +268,21 @@ export default function DashboardPage() {
             <div ref={printableContentRef} className="space-y-8 print-container p-4">
                 <style type="text/css" media="print">
                 {`
-                    @page { size: auto; margin: 0.5in; }
-                    body { -webkit-print-color-adjust: exact; }
-                    .print-container { padding: 0 !important; }
-                    .no-print { display: none !important; }
+                    @page { 
+                      size: auto;
+                      margin: 0.5in;
+                    }
+                    body { 
+                      -webkit-print-color-adjust: exact; 
+                      print-color-adjust: exact;
+                    }
+                    .print-container { 
+                      padding: 0 !important; 
+                      margin: 0 !important;
+                    }
+                    .no-print { 
+                      display: none !important; 
+                    }
                 `}
                 </style>
                 <KpiCards summary={summary} />
