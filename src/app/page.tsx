@@ -212,60 +212,64 @@ export default function LandingPage() {
         </section>
 
         {/* 2. Benefits Section (How it solves) */}
-        <section
-          id="benefits"
-          className="container mx-auto space-y-8 px-4 py-24 sm:py-32 sm:px-6 lg:px-8"
-        >
-          <h2 className="text-center text-3xl font-bold font-headline lg:text-4xl">
-            Tudo que você precisa para ter clareza financeira
-          </h2>
-
-          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-            <div className="flex flex-col gap-4 rounded-lg border bg-card p-6 shadow-sm">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
-                <UploadCloud className="h-6 w-6" />
-              </div>
-              <h3 className="text-xl font-bold font-headline">
-                Extração Automática
-              </h3>
-              <p className="text-muted-foreground">
-                Faça o upload do seu extrato em PDF. Nossa I.A. extrai todas
-                as transações de forma segura e instantânea, sem trabalho
-                manual.
+        <section id="benefits" className="w-full bg-card">
+          <div className="container mx-auto space-y-12 px-4 py-24 sm:py-32 sm:px-6 lg:px-8">
+            <div className="text-center">
+              <h2 className="text-3xl font-bold font-headline lg:text-4xl">
+                Tudo que você precisa para ter clareza financeira
+              </h2>
+              <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
+                Transforme dados brutos em decisões inteligentes com nossa plataforma completa.
               </p>
             </div>
 
-            <div className="flex flex-col gap-4 rounded-lg border bg-card p-6 shadow-sm">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
-                <Bot className="h-6 w-6" />
+            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+              <div className="flex flex-col items-center text-center gap-4 rounded-lg p-6">
+                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-primary mb-4">
+                  <UploadCloud className="h-8 w-8" />
+                </div>
+                <h3 className="text-xl font-bold font-headline">
+                  Extração Automática
+                </h3>
+                <p className="text-muted-foreground">
+                  Faça o upload do seu extrato em PDF. Nossa I.A. extrai todas
+                  as transações de forma segura e instantânea, sem trabalho
+                  manual.
+                </p>
               </div>
-              <h3 className="text-xl font-bold font-headline">
-                Categorização Inteligente
-              </h3>
-              <p className="text-muted-foreground">
-                Cada gasto é classificado automaticamente. Saiba exatamente
-                para onde seu dinheiro está indo: mercado, contas, lazer e
-                mais.
-              </p>
-            </div>
 
-            <div className="flex flex-col gap-4 rounded-lg border bg-card p-6 shadow-sm">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
-                <PieChart className="h-6 w-6" />
+              <div className="flex flex-col items-center text-center gap-4 rounded-lg p-6">
+                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-primary mb-4">
+                  <Bot className="h-8 w-8" />
+                </div>
+                <h3 className="text-xl font-bold font-headline">
+                  Categorização Inteligente
+                </h3>
+                <p className="text-muted-foreground">
+                  Cada gasto é classificado automaticamente. Saiba exatamente
+                  para onde seu dinheiro está indo: mercado, contas, lazer e
+                  mais.
+                </p>
               </div>
-              <h3 className="text-xl font-bold font-headline">
-                Dashboards Visuais
-              </h3>
-              <p className="text-muted-foreground">
-                Visualize suas finanças com gráficos interativos e fáceis de
-                entender. Tome decisões inteligentes com base em dados claros.
-              </p>
+
+              <div className="flex flex-col items-center text-center gap-4 rounded-lg p-6">
+                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-primary mb-4">
+                  <PieChart className="h-8 w-8" />
+                </div>
+                <h3 className="text-xl font-bold font-headline">
+                  Dashboards Visuais
+                </h3>
+                <p className="text-muted-foreground">
+                  Visualize suas finanças com gráficos interativos e fáceis de
+                  entender. Tome decisões inteligentes com base em dados claros.
+                </p>
+              </div>
             </div>
           </div>
         </section>
 
         {/* 3. Social Proof Section */}
-        <section id="social-proof" className="bg-card w-full">
+        <section id="social-proof" className="w-full">
           <div className="container mx-auto px-4 py-24 sm:py-32 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
                <h2 className="text-3xl font-bold font-headline lg:text-4xl">
@@ -281,19 +285,19 @@ export default function LandingPage() {
                 align: "start",
                 loop: true,
               }}
-              className="w-full max-w-4xl mx-auto"
+              className="w-full max-w-5xl mx-auto"
             >
               <CarouselContent>
                 {testimonials.map((testimonial, index) => (
                   <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
-                    <div className="p-1">
-                      <Card className="h-full">
+                    <div className="p-1 h-full">
+                      <Card className="h-full bg-card shadow-sm">
                         <CardContent className="flex flex-col h-full items-start justify-between p-6">
-                            <p className="flex-1 text-muted-foreground italic mb-6">
+                            <p className="flex-1 text-muted-foreground italic mb-6 text-base">
                             "{testimonial.quote}"
                           </p>
                           <div className="flex items-center">
-                            <Avatar>
+                            <Avatar className="h-12 w-12">
                               <AvatarImage
                                 src={testimonial.img}
                                 alt={testimonial.name}
@@ -301,7 +305,7 @@ export default function LandingPage() {
                               <AvatarFallback>{testimonial.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
                             </Avatar>
                             <div className="ml-4">
-                              <p className="font-semibold">{testimonial.name}</p>
+                              <p className="font-semibold text-base">{testimonial.name}</p>
                               <p className="text-sm text-muted-foreground">
                                 {testimonial.title}
                               </p>
