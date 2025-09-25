@@ -114,7 +114,7 @@ export default function LandingPage() {
             {/* Image */}
             <div className="hidden lg:block w-full">
               <div className="bg-card p-4 rounded-xl shadow-lg border">
-                <img src="https://picsum.photos/seed/finance-dashboard/600/400" alt="FinanceFlow Dashboard Preview" data-ai-hint="financial dashboard" className="rounded-lg aspect-video object-cover w-full" />
+                <img src="/img/financeGraphs.png" alt="FinanceFlow Dashboard Preview" data-ai-hint="financial dashboard" className="rounded-lg aspect-video object-cover w-full" />
               </div>
             </div>
           </div>
