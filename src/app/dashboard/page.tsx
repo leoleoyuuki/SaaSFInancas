@@ -292,47 +292,42 @@ export default function DashboardPage() {
                       width: 100%;
                       gap: 1rem;
                     }
-                    .print-content .kpi-grid {
-                      display: grid;
-                      grid-template-columns: repeat(3, 1fr);
-                      gap: 1rem;
+                    .kpi-grid {
+                      display: grid !important;
+                      grid-template-columns: repeat(3, 1fr) !important;
+                      gap: 1rem !important;
                     }
-                    .print-content .charts-grid {
-                      display: grid;
-                      grid-template-columns: 40% 1fr;
-                      gap: 1rem;
-                      align-items: flex-start;
+                    .charts-grid {
+                      display: grid !important;
+                      grid-template-columns: 40% 1fr !important;
+                      gap: 1rem !important;
+                      align-items: flex-start !important;
                     }
-                    .print-content .card {
+                    .card {
                       border: 1px solid #e2e8f0;
                       box-shadow: none;
                     }
-                     .print-content .card-header, .print-content .card-content {
+                     .card-header, .card-content {
                       padding: 0.75rem;
                     }
-                    .print-content .card-title {
+                    .card-title {
                        font-size: 1rem;
                     }
-                    .print-content .text-2xl {
+                    .text-2xl {
                       font-size: 1.25rem;
                     }
-                    .print-content .recharts-wrapper {
+                    .recharts-wrapper {
                        height: 250px !important;
                     }
                 `}
                 </style>
-                <div className="print-content">
-                  <KpiCards summary={summary} className="kpi-grid" />
-                  <div className="charts-grid">
-                    <SpendingPieChart data={categorySpending} />
-                    <IncomeExpenseBarChart summary={summary} />
-                  </div>
+                <KpiCards summary={summary} />
+                <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-7">
+                  <SpendingPieChart data={categorySpending} className="lg:col-span-3" />
+                  <IncomeExpenseBarChart summary={summary} className="lg:col-span-4" />
                 </div>
-
-                <div className="no-print">
-                  <div className="mt-8">
-                    <TransactionsTable transactions={transactions} setTransactions={setTransactions} />
-                  </div>
+                <div className="no-print mt-8">
+                  <TransactionsTable transactions={transactions} setTransactions={setTransactions} />
                 </div>
             </div>
         </div>
