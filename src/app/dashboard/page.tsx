@@ -281,9 +281,6 @@ export default function DashboardPage() {
                       margin: 0 !important;
                       width: 100%;
                       height: 100%;
-                      display: flex;
-                      flex-direction: column;
-                      justify-content: space-between;
                     }
                     .no-print { 
                       display: none !important; 
@@ -292,11 +289,16 @@ export default function DashboardPage() {
                       display: flex;
                       flex-direction: column;
                       height: 100%;
+                      width: 100%;
+                      justify-content: center;
                     }
-                    .print-content .grid {
+                    .print-content > .grid {
                       display: flex;
                       flex-wrap: nowrap;
                       gap: 1rem;
+                      width: 100%;
+                      height: 100%;
+                      align-items: center;
                     }
                      .print-content .grid > .lg\\:col-span-3 {
                         width: 40%;
@@ -323,21 +325,17 @@ export default function DashboardPage() {
                       font-size: 1.25rem;
                     }
                     .print-content .recharts-wrapper {
-                       height: 200px !important;
+                       height: 250px !important;
                     }
                     .print-content .recharts-surface {
                       overflow: visible;
                     }
-                    .print-content table {
-                      font-size: 0.8rem;
-                    }
-                    .print-content table th, .print-content table td {
-                       padding: 0.25rem;
-                    }
                 `}
                 </style>
                 <div className="print-content">
-                  <KpiCards summary={summary} />
+                  <div className="no-print">
+                    <KpiCards summary={summary} />
+                  </div>
                   <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7 mt-4 flex-grow">
                     <SpendingPieChart data={categorySpending} className="lg:col-span-3" />
                     <IncomeExpenseBarChart summary={summary} className="lg:col-span-4" />
