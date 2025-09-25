@@ -1,6 +1,6 @@
 'use client';
 
-import { Pie, PieChart } from 'recharts';
+import { Pie, PieChart, Cell } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import {
   ChartConfig,
@@ -67,7 +67,7 @@ export function SpendingPieChart({ data, className }: { data: CategorySpending[]
           <PieChart>
             <ChartTooltip
               cursor={false}
-              content={<ChartTooltipContent hideLabel nameKey="category" formatter={(value, name) => `${formatCurrency(value)} on ${name}`}/>}
+              content={<ChartTooltipContent hideLabel nameKey="category" formatter={(value, name) => `${formatCurrency(value as number)}`} />}
             />
             <Pie
               data={data}
@@ -75,7 +75,11 @@ export function SpendingPieChart({ data, className }: { data: CategorySpending[]
               nameKey="category"
               innerRadius={60}
               strokeWidth={5}
-            />
+            >
+              {data.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={chartConfig[entry.category as keyof typeof chartConfig]?.color || chartConfig.Others.color} />
+              ))}
+            </Pie>
             <ChartLegend
               content={<ChartLegendContent nameKey="category" />}
               className="-translate-y-2 flex-wrap gap-2 [&>*]:basis-1/4 [&>*]:justify-center"
