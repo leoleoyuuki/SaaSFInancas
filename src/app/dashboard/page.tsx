@@ -290,23 +290,18 @@ export default function DashboardPage() {
                       flex-direction: column;
                       height: 100%;
                       width: 100%;
-                      justify-content: center;
                     }
-                    .print-content > .grid {
-                      display: flex;
-                      flex-wrap: nowrap;
+                    .print-content > .grid.kpi {
+                      display: grid;
+                      grid-template-columns: repeat(3, 1fr);
                       gap: 1rem;
-                      width: 100%;
-                      height: 100%;
-                      align-items: center;
+                      margin-bottom: 1rem;
                     }
-                     .print-content .grid > .lg\\:col-span-3 {
-                        width: 40%;
-                        flex-shrink: 0;
-                    }
-                    .print-content .grid > .lg\\:col-span-4 {
-                       width: 60%;
-                       flex-shrink: 0;
+                    .print-content > .grid.charts {
+                      display: grid;
+                      grid-template-columns: 40% 60%;
+                      gap: 1rem;
+                      flex-grow: 1;
                     }
                     .print-content .card {
                       border: 1px solid #e2e8f0;
@@ -333,10 +328,10 @@ export default function DashboardPage() {
                 `}
                 </style>
                 <div className="print-content">
-                  <div className="no-print">
+                  <div className="grid kpi">
                     <KpiCards summary={summary} />
                   </div>
-                  <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7 mt-4 flex-grow">
+                  <div className="grid charts">
                     <SpendingPieChart data={categorySpending} className="lg:col-span-3" />
                     <IncomeExpenseBarChart summary={summary} className="lg:col-span-4" />
                   </div>

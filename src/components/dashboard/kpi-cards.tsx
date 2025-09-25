@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { formatCurrency } from '@/lib/utils';
 import { ArrowUpCircle, ArrowDownCircle, TrendingUp } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 export type Summary = {
   income: number;
@@ -8,11 +9,11 @@ export type Summary = {
   net: number;
 };
 
-export function KpiCards({ summary }: { summary: Summary }) {
+export function KpiCards({ summary, className }: { summary: Summary, className?:string }) {
   const { income, expenses, net } = summary;
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-3">
+    <div className={cn("grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-3", className)}>
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Total Income</CardTitle>
