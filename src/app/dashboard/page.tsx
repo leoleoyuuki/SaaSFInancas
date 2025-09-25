@@ -265,7 +265,7 @@ export default function DashboardPage() {
                 </div>
             </div>
             
-            <div ref={printableContentRef} className="space-y-8 print-container">
+            <div ref={printableContentRef} className="space-y-8">
                 <style type="text/css" media="print">
                 {`
                     @page { 
@@ -286,22 +286,22 @@ export default function DashboardPage() {
                       display: none !important; 
                     }
                     .print-content {
-                      display: flex;
-                      flex-direction: column;
+                      display: grid;
+                      grid-template-rows: auto 1fr;
                       height: 100%;
                       width: 100%;
+                      gap: 1rem;
                     }
                     .print-content .kpi-grid {
                       display: grid;
                       grid-template-columns: repeat(3, 1fr);
                       gap: 1rem;
-                      margin-bottom: 1rem;
                     }
                     .print-content .charts-grid {
                       display: grid;
                       grid-template-columns: 40% 1fr;
                       gap: 1rem;
-                      flex-grow: 1;
+                      align-items: flex-start;
                     }
                     .print-content .card {
                       border: 1px solid #e2e8f0;
@@ -317,21 +317,21 @@ export default function DashboardPage() {
                       font-size: 1.25rem;
                     }
                     .print-content .recharts-wrapper {
-                       height: 300px !important;
+                       height: 250px !important;
                     }
                 `}
                 </style>
                 <div className="print-content">
                   <KpiCards summary={summary} className="kpi-grid" />
-                  <div className="charts-grid grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-7">
-                    <SpendingPieChart data={categorySpending} className="lg:col-span-3" />
-                    <IncomeExpenseBarChart summary={summary} className="lg:col-span-4" />
+                  <div className="charts-grid">
+                    <SpendingPieChart data={categorySpending} />
+                    <IncomeExpenseBarChart summary={summary} />
                   </div>
                 </div>
 
                 <div className="no-print">
                   <KpiCards summary={summary} />
-                  <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-7 mt-8">
+                  <div className="mt-8 grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-7">
                     <SpendingPieChart data={categorySpending} className="lg:col-span-3" />
                     <IncomeExpenseBarChart summary={summary} className="lg:col-span-4" />
                   </div>
