@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useTransition, useMemo, useRef } from 'react';
-import { Loader2, FileText, Upload, Download, Trash2 } from 'lucide-react';
+import { Loader2, FileText, Upload, Download, Trash2, FileJson } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import type { CategorizedTransaction } from '@/lib/types';
@@ -17,6 +17,7 @@ export default function DashboardPage() {
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const jsonInputRef = useRef<HTMLInputElement>(null);
 
   const handleUseSampleData = () => {
     startTransition(async () => {
@@ -67,6 +68,50 @@ export default function DashboardPage() {
         fileInputRef.current.value = '';
     }
   };
+
+  const handleJsonUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+        startTransition(() => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const text = e.target?.result;
+                    if (typeof text !== 'string') {
+                        throw new Error("Could not read file content.");
+                    }
+                    const data = JSON.parse(text);
+                    // TODO: Add validation with Zod or similar to ensure data integrity
+                    setTransactions(data);
+                    toast({
+                        title: "Relatório Importado",
+                        description: "Seus dados financeiros foram carregados com sucesso.",
+                    });
+                } catch (error) {
+                    const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred.";
+                    toast({
+                        variant: "destructive",
+                        title: "Falha na Importação do JSON",
+                        description: `Ocorreu um erro ao ler o arquivo: ${errorMessage}`,
+                    });
+                }
+            };
+            reader.onerror = () => {
+                 toast({
+                    variant: "destructive",
+                    title: "Erro de Leitura",
+                    description: "Não foi possível ler o arquivo selecionado.",
+                });
+            }
+            reader.readAsText(file);
+        });
+    }
+    // Reset file input
+    if (jsonInputRef.current) {
+        jsonInputRef.current.value = '';
+    }
+  };
+
 
   const handleDownloadReport = () => {
     try {
@@ -154,18 +199,23 @@ export default function DashboardPage() {
         <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-muted-foreground/30 bg-card p-12 text-center h-[calc(100vh-200px)] shadow-sm">
           <FileText className="mx-auto h-12 w-12 text-muted-foreground" />
           <h3 className="mt-4 text-lg font-semibold font-headline">Comece a sua análise</h3>
-          <p className="mb-4 mt-2 text-sm text-muted-foreground">Faça o upload de um extrato bancário em PDF ou use nossos dados de exemplo para ver a mágica acontecer.</p>
-          <div className="flex gap-4">
+          <p className="mb-4 mt-2 text-sm text-muted-foreground">Faça o upload de um extrato bancário em PDF, importe um relatório JSON ou use nossos dados de exemplo.</p>
+          <div className="flex flex-wrap justify-center gap-4">
             <Button onClick={() => fileInputRef.current?.click()} variant="default">
               <Upload className="mr-2 h-4 w-4" />
               Enviar Extrato PDF
             </Button>
-            <input type="file" ref={fileInputRef} onChange={handlePdfUpload} accept=".pdf" className="hidden" />
+             <Button onClick={() => jsonInputRef.current?.click()} variant="secondary">
+              <FileJson className="mr-2 h-4 w-4" />
+              Importar JSON
+            </Button>
             <Button onClick={handleUseSampleData} variant="secondary">
               <FileText className="mr-2 h-4 w-4" />
               Usar Dados de Exemplo
             </Button>
           </div>
+          <input type="file" ref={fileInputRef} onChange={handlePdfUpload} accept=".pdf" className="hidden" />
+          <input type="file" ref={jsonInputRef} onChange={handleJsonUpload} accept=".json" className="hidden" />
         </div>
       )}
 
