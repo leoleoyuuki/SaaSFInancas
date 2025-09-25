@@ -1,6 +1,8 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Bot, UploadCloud, PieChart, ShieldCheck } from 'lucide-react';
+import { ArrowRight, Bot, UploadCloud, PieChart, ShieldCheck, Menu } from 'lucide-react';
+import { Sheet, SheetTrigger, SheetContent } from '@/components/ui/sheet';
+
 
 const Logo = () => (
   <svg
@@ -29,7 +31,9 @@ export default function LandingPage() {
               FinanceFlow
             </span>
           </Link>
-          <nav className="flex items-center gap-4">
+          
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex items-center gap-4">
             <Button variant="ghost" asChild>
               <Link href="/dashboard">Dashboard</Link>
             </Button>
@@ -39,6 +43,30 @@ export default function LandingPage() {
               </Link>
             </Button>
           </nav>
+
+          {/* Mobile Navigation */}
+          <div className="md:hidden">
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="outline" size="icon">
+                  <Menu className="h-5 w-5" />
+                  <span className="sr-only">Open menu</span>
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right">
+                <nav className="grid gap-6 text-lg font-medium pt-10">
+                  <Link href="/dashboard" className="text-foreground hover:text-foreground/80">
+                    Dashboard
+                  </Link>
+                  <Button asChild>
+                    <Link href="/dashboard">
+                      Get Started <ArrowRight className="ml-2 h-4 w-4" />
+                    </Link>
+                  </Button>
+                </nav>
+              </SheetContent>
+            </Sheet>
+          </div>
         </div>
       </header>
 
@@ -66,7 +94,7 @@ export default function LandingPage() {
                 </p>
 
                 <div className="space-y-4 md:space-y-0 md:space-x-4">
-                    <Button className="w-full md:w-1/3" asChild>
+                    <Button className="w-full md:w-auto" asChild>
                         <Link href="/dashboard">
                             Comece agora
                             <ArrowRight className="ml-2 h-5 w-5" />
@@ -131,7 +159,7 @@ export default function LandingPage() {
                 Comece a organizar suas finanças em menos de um minuto.
             </p>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
                 <div className="flex flex-col items-center gap-4">
                     <div className="flex items-center justify-center h-16 w-16 rounded-full bg-primary text-primary-foreground font-bold text-2xl">1</div>
                     <h3 className="text-xl font-bold font-headline">Faça o Upload</h3>
@@ -154,13 +182,13 @@ export default function LandingPage() {
         {/* CTA Section */}
         <section id="cta" className="bg-card">
             <div className="container py-20 sm:py-24 text-center">
-                <h2 className="text-4xl md:text-5xl font-bold font-headline">
+                <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold font-headline">
                     Pronto para assumir o controle?
                 </h2>
-                <p className="text-xl text-muted-foreground mt-4 mb-8">
+                <p className="text-lg md:text-xl text-muted-foreground mt-4 mb-8">
                    Pare de adivinhar, comece a ver. Sua jornada para a clareza financeira começa agora.
                 </p>
-                <Button asChild className="text-lg px-8 py-6">
+                <Button asChild size="lg" className="text-lg px-8 py-6">
                     <Link href="/dashboard">
                         Analisar Meu Extrato Gratuitamente
                     </Link>
@@ -170,11 +198,11 @@ export default function LandingPage() {
       </main>
 
       <footer className="border-t">
-        <div className="container py-6 flex justify-between items-center">
-            <p className="text-sm text-muted-foreground">
+        <div className="container py-6 flex flex-col md:flex-row justify-between items-center gap-4">
+            <p className="text-sm text-muted-foreground text-center md:text-left">
                 &copy; 2024 FinanceFlow. Todos os direitos reservados.
             </p>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground text-center">
                 <ShieldCheck className="h-4 w-4" />
                 <span>Seus dados são processados localmente e nunca armazenados.</span>
             </div>
@@ -183,3 +211,5 @@ export default function LandingPage() {
     </div>
   );
 }
+
+    
