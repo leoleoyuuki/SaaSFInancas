@@ -14,8 +14,16 @@ import {
   Clock,
   Zap,
 } from 'lucide-react';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 import { Sheet, SheetTrigger, SheetContent } from '@/components/ui/sheet';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Card, CardContent } from '@/components/ui/card';
 
 const Logo = () => (
   <svg
@@ -79,11 +87,38 @@ export default function LandingPage() {
       mockup: '/api/placeholder/300/200',
     },
   ];
+  
+  const testimonials = [
+    {
+      quote: "Finalmente entendi para onde meu dinheiro vai todo mês. O FinanceFlow tornou tudo tão simples que me arrependo de não ter usado antes.",
+      name: "Juliana S.",
+      title: "Designer",
+      img: "https://i.pravatar.cc/150?img=1"
+    },
+    {
+      quote: "Eu odiava planilhas. O fato de poder simplesmente jogar meu extrato PDF e ter tudo analisado automaticamente é incrível. Economizou horas da minha vida.",
+      name: "Marcos P.",
+      title: "Desenvolvedor",
+      img: "https://i.pravatar.cc/150?img=2"
+    },
+    {
+      quote: "Uma ferramenta poderosa e, ao mesmo tempo, super fácil de usar. O dashboard visual me ajudou a cortar gastos desnecessários e a economizar mais.",
+      name: "Carla M.",
+      title: "Autônoma",
+      img: "https://i.pravatar.cc/150?img=3"
+    },
+     {
+      quote: "A melhor parte é a segurança. Saber que meus dados são processados localmente e não ficam armazenados em nenhum servidor me dá muita tranquilidade.",
+      name: "Rafael G.",
+      title: "Engenheiro de Software",
+      img: "https://i.pravatar.cc/150?img=4"
+    }
+  ];
 
   return (
     <div className="flex min-h-screen flex-col bg-background text-foreground">
-      <header className="w-full border-b border-border/40">
-        <div className="container mx-auto flex h-14 items-center justify-between px-4 sm:px-6 lg:px-8">
+       <header className="w-full border-b border-border/40">
+        <div className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link href="#" className="flex items-center gap-2">
             <Logo />
             <span className="text-xl font-bold font-headline text-foreground">
@@ -138,7 +173,6 @@ export default function LandingPage() {
           </div>
         </div>
       </header>
-
       <main className="flex-1">
         {/* 1. Hero Section (Problem + Solution) */}
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-32">
@@ -231,75 +265,57 @@ export default function LandingPage() {
         </section>
 
         {/* 3. Social Proof Section */}
-        <section id="social-proof" className="bg-card">
+        <section id="social-proof" className="bg-card w-full">
           <div className="container mx-auto px-4 py-24 sm:py-32 sm:px-6 lg:px-8">
-            <h2 className="text-center text-3xl font-bold font-headline lg:text-4xl">
-              Junte-se a milhares de pessoas que organizaram suas finanças
-            </h2>
-            <div className="mt-12 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-              <div className="flex flex-col rounded-lg border bg-background p-6 shadow-sm">
-                <p className="flex-1 text-muted-foreground">
-                  "Finalmente entendi para onde meu dinheiro vai todo mês. O
-                  FinanceFlow tornou tudo tão simples que me arrependo de não
-                  ter usado antes."
+            <div className="text-center mb-12">
+               <h2 className="text-3xl font-bold font-headline lg:text-4xl">
+                  Junte-se a milhares de pessoas que organizaram suas finanças
+                </h2>
+                <p className="text-lg text-muted-foreground mt-4 max-w-2xl mx-auto">
+                    Veja o que nossos usuários estão dizendo sobre a transformação financeira que o FinanceFlow proporcionou.
                 </p>
-                <div className="mt-4 flex items-center">
-                  <Avatar>
-                    <AvatarImage
-                      src="https://i.pravatar.cc/150?img=1"
-                      alt="Juliana S."
-                    />
-                    <AvatarFallback>JS</AvatarFallback>
-                  </Avatar>
-                  <div className="ml-4">
-                    <p className="font-semibold">Juliana S.</p>
-                    <p className="text-sm text-muted-foreground">Designer</p>
-                  </div>
-                </div>
-              </div>
-              <div className="flex flex-col rounded-lg border bg-background p-6 shadow-sm">
-                <p className="flex-1 text-muted-foreground">
-                  "Eu odiava planilhas. O fato de poder simplesmente jogar
-                  meu extrato PDF e ter tudo analisado automaticamente é
-                  incrível. Economizou horas da minha vida."
-                </p>
-                <div className="mt-4 flex items-center">
-                  <Avatar>
-                    <AvatarImage
-                      src="https://i.pravatar.cc/150?img=2"
-                      alt="Marcos P."
-                    />
-                    <AvatarFallback>MP</AvatarFallback>
-                  </Avatar>
-                  <div className="ml-4">
-                    <p className="font-semibold">Marcos P.</p>
-                    <p className="text-sm text-muted-foreground">
-                      Desenvolvedor
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <div className="flex flex-col rounded-lg border bg-background p-6 shadow-sm">
-                <p className="flex-1 text-muted-foreground">
-                  "Uma ferramenta poderosa e, ao mesmo tempo, super fácil de
-                  usar. O dashboard visual me ajudou a cortar gastos
-                  desnecessários e a economizar mais."
-                </p>
-                <div className="mt-4 flex items-center">
-                  <Avatar>
-                    <AvatarImage
-                      src="https://i.pravatar.cc/150?img=3"
-                      alt="Carla M."
-                    />
-                    <AvatarFallback>CM</AvatarFallback>
-                  </Avatar>
-                  <div className="ml-4">
-                    <p className="font-semibold">Carla M.</p>
-                    <p className="text-sm text-muted-foreground">Autônoma</p>
-                  </div>
-                </div>
-              </div>
             </div>
+
+            <Carousel
+              opts={{
+                align: "start",
+                loop: true,
+              }}
+              className="w-full max-w-4xl mx-auto"
+            >
+              <CarouselContent>
+                {testimonials.map((testimonial, index) => (
+                  <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
+                    <div className="p-1">
+                      <Card className="h-full">
+                        <CardContent className="flex flex-col h-full items-start justify-between p-6">
+                            <p className="flex-1 text-muted-foreground italic mb-6">
+                            "{testimonial.quote}"
+                          </p>
+                          <div className="flex items-center">
+                            <Avatar>
+                              <AvatarImage
+                                src={testimonial.img}
+                                alt={testimonial.name}
+                              />
+                              <AvatarFallback>{testimonial.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                            </Avatar>
+                            <div className="ml-4">
+                              <p className="font-semibold">{testimonial.name}</p>
+                              <p className="text-sm text-muted-foreground">
+                                {testimonial.title}
+                              </p>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </div>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselPrevious className="hidden sm:flex" />
+              <CarouselNext className="hidden sm:flex" />
+            </Carousel>
           </div>
         </section>
 
@@ -326,7 +342,7 @@ export default function LandingPage() {
           <div className="hidden lg:block">
             <div className="grid grid-cols-3 gap-8 relative">
               {/* Connection Lines */}
-              <div className="absolute top-16 left-1/3 right-1/3 h-0.5 bg-gradient-to-r from-primary via-accent to-primary transform translate-x-16"></div>
+              <div className="absolute top-16 left-1/3 right-1/3 h-0.5 bg-gradient-to-r from-primary via-accent to-primary transform -translate-x-1/2 w-2/3"></div>
 
               {steps.map((step, index) => (
                 <div
