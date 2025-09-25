@@ -251,7 +251,7 @@ export default function DashboardPage() {
                            <FileJson className="mr-2 h-4 w-4" />
                            JSON (para importar)
                         </DropdownMenuItem>
-                        <DropdownMenuItem onSelect={handlePrint}>
+                        <DropdownMenuItem onClick={handlePrint}>
                            <FileText className="mr-2 h-4 w-4" />
                            PDF (para visualizar)
                         </DropdownMenuItem>
@@ -323,9 +323,9 @@ export default function DashboardPage() {
                 </style>
                 <div className="print-content">
                   <KpiCards summary={summary} className="kpi-grid" />
-                  <div className="charts-grid">
-                    <SpendingPieChart data={categorySpending} />
-                    <IncomeExpenseBarChart summary={summary} />
+                  <div className="charts-grid grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-7">
+                    <SpendingPieChart data={categorySpending} className="lg:col-span-3" />
+                    <IncomeExpenseBarChart summary={summary} className="lg:col-span-4" />
                   </div>
                 </div>
 
@@ -340,7 +340,6 @@ export default function DashboardPage() {
                   </div>
                 </div>
             </div>
-
         </div>
       )}
     </div>
