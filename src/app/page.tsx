@@ -55,6 +55,10 @@ export default function LandingPage() {
               </SheetTrigger>
               <SheetContent side="right">
                 <nav className="grid gap-6 text-lg font-medium pt-10">
+                   <Link href="#" className="flex items-center gap-2 text-lg font-semibold">
+                      <Logo />
+                      <span>FinanceFlow</span>
+                  </Link>
                   <Link href="/dashboard" className="text-foreground hover:text-foreground/80">
                     Dashboard
                   </Link>
@@ -211,5 +215,3 @@ export default function LandingPage() {
     </div>
   );
 }
-
-    
