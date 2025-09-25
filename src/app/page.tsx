@@ -23,9 +23,7 @@ export default function LandingPage() {
   return (
     <div className="flex min-h-screen flex-col bg-background text-foreground">
       <header className="w-full border-b border-border/40">
-        <div className="mx-auto max-w-[1440px]
-
- px-4 sm:px-6 lg:px-8 flex h-14 items-center justify-between">
+        <div className="container mx-auto flex h-14 items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link href="#" className="flex items-center gap-2">
             <Logo />
             <span className="text-xl font-bold font-headline text-foreground">
@@ -77,11 +75,9 @@ export default function LandingPage() {
 
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="mx-auto max-w-[1440px]
-
- px-4 sm:px-6 lg:px-8 py-20 md:py-32">
+        <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-32 my-8 bg-[url('/img/financeGraphs.jpg')] bg-cover bg-center bg-no-repeat rounded-xl">
           <div className="grid lg:grid-cols-2 place-items-center gap-10">
-            <div className="text-center lg:text-start space-y-6">
+            <div className="text-center lg:text-start space-y-6 bg-background/70 backdrop-blur-sm p-8 rounded-lg">
                 <main className="text-5xl md:text-6xl font-bold font-headline">
                     <h1 className="inline">
                         <span className="inline bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
@@ -111,19 +107,14 @@ export default function LandingPage() {
                 </div>
             </div>
             
-            {/* Image */}
+            {/* Image placeholder for the right side on larger screens */}
             <div className="hidden lg:block w-full">
-              <div className="bg-card p-4 rounded-xl shadow-lg border">
-                <img src="/img/financeGraphs.png" alt="FinanceFlow Dashboard Preview" data-ai-hint="financial dashboard" className="rounded-lg aspect-video object-cover w-full" />
-              </div>
             </div>
           </div>
         </section>
 
         {/* Features Section */}
-        <section id="features" className="mx-auto max-w-[1440px]
-
- px-4 sm:px-6 lg:px-8 py-24 sm:py-32 space-y-8">
+        <section id="features" className="container mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-32 space-y-8">
             <h2 className="text-3xl lg:text-4xl font-headline font-bold text-center">
                 Recursos Principais
             </h2>
@@ -162,9 +153,7 @@ export default function LandingPage() {
         </section>
 
         {/* How It Works Section */}
-        <section id="how-it-works" className="mx-auto max-w-[1440px]
-
- px-4 sm:px-6 lg:px-8 py-24 sm:py-32 text-center">
+        <section id="how-it-works" className="container mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-32 text-center">
              <h2 className="text-3xl md:text-4xl font-bold font-headline">
                 Como Funciona em 3 Passos Simples
             </h2>
@@ -193,9 +182,7 @@ export default function LandingPage() {
 
         {/* CTA Section */}
         <section id="cta" className="bg-card">
-            <div className="mx-auto max-w-[1440px]
-
- px-4 sm:px-6 lg:px-8 py-20 sm:py-24 text-center">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-24 text-center">
                 <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold font-headline">
                     Pronto para assumir o controle?
                 </h2>
@@ -212,9 +199,7 @@ export default function LandingPage() {
       </main>
 
       <footer className="border-t">
-        <div className="mx-auto max-w-[1440px]
-
- px-4 sm:px-6 lg:px-8 py-6 flex flex-col md:flex-row justify-between items-center gap-4">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-sm text-muted-foreground text-center md:text-left">
                 &copy; 2024 FinanceFlow. Todos os direitos reservados.
             </p>
