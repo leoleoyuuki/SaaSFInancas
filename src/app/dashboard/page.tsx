@@ -250,11 +250,11 @@ export default function DashboardPage() {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent>
-                        <DropdownMenuItem onClick={handleJsonDownload}>
+                        <DropdownMenuItem onSelect={handleJsonDownload}>
                            <FileJson className="mr-2 h-4 w-4" />
                            JSON (para importar)
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={handlePrint}>
+                        <DropdownMenuItem onSelect={handlePrint}>
                            <FileText className="mr-2 h-4 w-4" />
                            PDF (para visualizar)
                         </DropdownMenuItem>
@@ -290,3 +290,5 @@ export default function DashboardPage() {
     </div>
   );
 }
+
+    
