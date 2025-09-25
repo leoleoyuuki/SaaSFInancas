@@ -3,8 +3,9 @@ import { Toaster } from "@/components/ui/toaster"
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'FinanceFlow',
-  description: 'Understand your finances by uploading bank statements, categorizing transactions, and visualizing your spending.',
+  title: 'FinanceFlow | Transforme Extratos em Insights Financeiros',
+  description: 'Faça o upload do seu extrato bancário em PDF e deixe a I.A. categorizar suas transações, revelar seus hábitos de consumo e ajudar a controlar suas finanças.',
+  keywords: ['gerenciador financeiro', 'orçamento pessoal', 'análise de extrato bancário', 'finanças pessoais', 'controle de gastos', 'IA financeira'],
 };
 
 export default function RootLayout({
@@ -13,7 +14,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="pt-BR" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
