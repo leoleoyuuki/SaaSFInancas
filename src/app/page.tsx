@@ -75,9 +75,9 @@ export default function LandingPage() {
 
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-32 my-8 bg-[url('/img/financeGraphs.jpg')] bg-cover bg-center bg-no-repeat rounded-xl">
+        <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-32 my-8 rounded-xl">
           <div className="grid lg:grid-cols-2 place-items-center gap-10">
-            <div className="text-center lg:text-start space-y-6 bg-background/70 backdrop-blur-sm p-8 rounded-lg">
+            <div className="text-center lg:text-start space-y-6">
                 <main className="text-5xl md:text-6xl font-bold font-headline">
                     <h1 className="inline">
                         <span className="inline bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
