@@ -247,11 +247,11 @@ export default function DashboardPage() {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent>
-                        <DropdownMenuItem onClick={handleJsonDownload}>
+                        <DropdownMenuItem onSelect={handleJsonDownload}>
                            <FileJson className="mr-2 h-4 w-4" />
                            JSON (para importar)
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={handlePrint}>
+                        <DropdownMenuItem onSelect={handlePrint}>
                            <FileText className="mr-2 h-4 w-4" />
                            PDF (para visualizar)
                         </DropdownMenuItem>
@@ -265,7 +265,7 @@ export default function DashboardPage() {
                 </div>
             </div>
             
-            <div ref={printableContentRef} className="space-y-8 print-container p-4">
+            <div ref={printableContentRef} className="space-y-8 print-container">
                 <style type="text/css" media="print">
                 {`
                     @page { 
@@ -291,13 +291,7 @@ export default function DashboardPage() {
                       height: 100%;
                       width: 100%;
                     }
-                    .print-content > .grid.kpi {
-                      display: grid;
-                      grid-template-columns: repeat(3, 1fr);
-                      gap: 1rem;
-                      margin-bottom: 1rem;
-                    }
-                    .print-content > .grid.charts {
+                    .print-content > .grid {
                       display: grid;
                       grid-template-columns: 40% 60%;
                       gap: 1rem;
@@ -307,31 +301,25 @@ export default function DashboardPage() {
                       border: 1px solid #e2e8f0;
                       box-shadow: none;
                     }
-                    .print-content .card-header, .print-content .card-content {
+                     .print-content .card-header, .print-content .card-content {
                       padding: 0.75rem;
                     }
                     .print-content .card-title {
                        font-size: 1rem;
                     }
-                    .print-content .card-description {
-                       font-size: 0.75rem;
-                    }
                     .print-content .text-2xl {
                       font-size: 1.25rem;
                     }
                     .print-content .recharts-wrapper {
-                       height: 250px !important;
-                    }
-                    .print-content .recharts-surface {
-                      overflow: visible;
+                       height: 350px !important;
                     }
                 `}
                 </style>
                 <div className="print-content">
-                  <div className="grid kpi">
-                    <KpiCards summary={summary} />
-                  </div>
-                  <div className="grid charts">
+                  <div className="grid">
+                    <div className="no-print">
+                      <KpiCards summary={summary} />
+                    </div>
                     <SpendingPieChart data={categorySpending} className="lg:col-span-3" />
                     <IncomeExpenseBarChart summary={summary} className="lg:col-span-4" />
                   </div>
