@@ -269,28 +269,83 @@ export default function DashboardPage() {
                 <style type="text/css" media="print">
                 {`
                     @page { 
-                      size: auto;
+                      size: landscape;
                       margin: 0.5in;
                     }
                     body { 
-                      -webkit-print-color-adjust: exact; 
-                      print-color-adjust: exact;
+                      -webkit-print-color-adjust: exact !important; 
+                      print-color-adjust: exact !important;
                     }
                     .print-container { 
                       padding: 0 !important; 
                       margin: 0 !important;
+                      width: 100%;
+                      height: 100%;
+                      display: flex;
+                      flex-direction: column;
+                      justify-content: space-between;
                     }
                     .no-print { 
                       display: none !important; 
                     }
+                    .print-content {
+                      display: flex;
+                      flex-direction: column;
+                      height: 100%;
+                    }
+                    .print-content .grid {
+                      display: flex;
+                      flex-wrap: nowrap;
+                      gap: 1rem;
+                    }
+                     .print-content .grid > .lg\\:col-span-3 {
+                        width: 40%;
+                        flex-shrink: 0;
+                    }
+                    .print-content .grid > .lg\\:col-span-4 {
+                       width: 60%;
+                       flex-shrink: 0;
+                    }
+                    .print-content .card {
+                      border: 1px solid #e2e8f0;
+                      box-shadow: none;
+                    }
+                    .print-content .card-header, .print-content .card-content {
+                      padding: 0.75rem;
+                    }
+                    .print-content .card-title {
+                       font-size: 1rem;
+                    }
+                    .print-content .card-description {
+                       font-size: 0.75rem;
+                    }
+                    .print-content .text-2xl {
+                      font-size: 1.25rem;
+                    }
+                    .print-content .recharts-wrapper {
+                       height: 200px !important;
+                    }
+                    .print-content .recharts-surface {
+                      overflow: visible;
+                    }
+                    .print-content table {
+                      font-size: 0.8rem;
+                    }
+                    .print-content table th, .print-content table td {
+                       padding: 0.25rem;
+                    }
                 `}
                 </style>
-                <KpiCards summary={summary} />
-                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">
-                  <SpendingPieChart data={categorySpending} className="lg:col-span-3" />
-                  <IncomeExpenseBarChart summary={summary} className="lg:col-span-4" />
+                <div className="print-content">
+                  <KpiCards summary={summary} />
+                  <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7 mt-4 flex-grow">
+                    <SpendingPieChart data={categorySpending} className="lg:col-span-3" />
+                    <IncomeExpenseBarChart summary={summary} className="lg:col-span-4" />
+                  </div>
+                  <div className="mt-4">
+                    <TransactionsTable transactions={transactions} setTransactions={setTransactions} />
+                  </div>
                 </div>
-                <TransactionsTable transactions={transactions} setTransactions={setTransactions} />
             </div>
 
         </div>
