@@ -1,8 +1,15 @@
 'use client';
 
 import { useState, useTransition, useMemo, useRef } from 'react';
-import { Loader2, FileText, Upload, Download, Trash2, FileJson } from 'lucide-react';
+import { useReactToPrint } from 'react-to-print';
+import { Loader2, FileText, Upload, Download, Trash2, FileJson, ChevronDown, FileUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { useToast } from '@/hooks/use-toast';
 import type { CategorizedTransaction } from '@/lib/types';
 import { getCategorizedSampleTransactions, processAndCategorizePdf } from '@/lib/actions';
@@ -18,6 +25,14 @@ export default function DashboardPage() {
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const jsonInputRef = useRef<HTMLInputElement>(null);
+  const printableContentRef = useRef(null);
+
+  const handlePrint = useReactToPrint({
+    content: () => printableContentRef.current,
+    documentTitle: "relatorio-financeflow",
+    onAfterPrint: () => toast({ title: "Relatório exportado para PDF." }),
+  });
+
 
   const handleUseSampleData = () => {
     startTransition(async () => {
@@ -113,7 +128,7 @@ export default function DashboardPage() {
   };
 
 
-  const handleDownloadReport = () => {
+  const handleJsonDownload = () => {
     try {
       const jsonString = `data:text/json;charset=utf-8,${encodeURIComponent(
         JSON.stringify(transactions, null, 2)
@@ -197,7 +212,7 @@ export default function DashboardPage() {
     <div className="mx-auto w-full space-y-6">
        {!hasTransactions && !isPending && (
         <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-muted-foreground/30 bg-card p-12 text-center h-[calc(100vh-200px)] shadow-sm">
-          <FileText className="mx-auto h-12 w-12 text-muted-foreground" />
+          <FileUp className="mx-auto h-12 w-12 text-muted-foreground" />
           <h3 className="mt-4 text-lg font-semibold font-headline">Comece a sua análise</h3>
           <p className="mb-4 mt-2 text-sm text-muted-foreground">Faça o upload de um extrato bancário em PDF, importe um relatório JSON ou use nossos dados de exemplo.</p>
           <div className="flex flex-wrap justify-center gap-4">
@@ -226,23 +241,50 @@ export default function DashboardPage() {
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 bg-card border rounded-lg shadow-sm">
                 <h3 className="text-lg font-semibold font-headline">Seu Dashboard Financeiro</h3>
                 <div className="flex gap-2">
-                    <Button onClick={handleDownloadReport} variant="outline">
-                        <Download className="mr-2 h-4 w-4" />
-                        Download do Relatório
-                    </Button>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="outline">
+                          <Download className="mr-2 h-4 w-4" />
+                          Download
+                          <ChevronDown className="ml-2 h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent>
+                        <DropdownMenuItem onClick={handleJsonDownload}>
+                           <FileJson className="mr-2 h-4 w-4" />
+                           JSON (para importar)
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={handlePrint}>
+                           <FileText className="mr-2 h-4 w-4" />
+                           PDF (para visualizar)
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+
                     <Button onClick={handleClearData} variant="destructive">
                         <Trash2 className="mr-2 h-4 w-4" />
                         Limpar Dados
                     </Button>
                 </div>
             </div>
-
-            <KpiCards summary={summary} />
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">
-              <SpendingPieChart data={categorySpending} className="lg:col-span-3" />
-              <IncomeExpenseBarChart summary={summary} className="lg:col-span-4" />
+            
+            <div ref={printableContentRef} className="space-y-8 print-container p-4">
+                <style type="text/css" media="print">
+                {`
+                    @page { size: auto; margin: 0.5in; }
+                    body { -webkit-print-color-adjust: exact; }
+                    .print-container { padding: 0 !important; }
+                    .no-print { display: none !important; }
+                `}
+                </style>
+                <KpiCards summary={summary} />
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">
+                  <SpendingPieChart data={categorySpending} className="lg:col-span-3" />
+                  <IncomeExpenseBarChart summary={summary} className="lg:col-span-4" />
+                </div>
+                <TransactionsTable transactions={transactions} setTransactions={setTransactions} />
             </div>
-            <TransactionsTable transactions={transactions} setTransactions={setTransactions} />
+
         </div>
       )}
     </div>
