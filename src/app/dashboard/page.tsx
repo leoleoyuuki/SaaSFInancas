@@ -291,9 +291,15 @@ export default function DashboardPage() {
                       height: 100%;
                       width: 100%;
                     }
-                    .print-content > .grid {
+                    .print-content .kpi-grid {
                       display: grid;
-                      grid-template-columns: 40% 60%;
+                      grid-template-columns: repeat(3, 1fr);
+                      gap: 1rem;
+                      margin-bottom: 1rem;
+                    }
+                    .print-content .charts-grid {
+                      display: grid;
+                      grid-template-columns: 40% 1fr;
                       gap: 1rem;
                       flex-grow: 1;
                     }
@@ -311,19 +317,25 @@ export default function DashboardPage() {
                       font-size: 1.25rem;
                     }
                     .print-content .recharts-wrapper {
-                       height: 350px !important;
+                       height: 300px !important;
                     }
                 `}
                 </style>
                 <div className="print-content">
-                  <div className="no-print">
-                    <KpiCards summary={summary} />
+                  <KpiCards summary={summary} className="kpi-grid" />
+                  <div className="charts-grid">
+                    <SpendingPieChart data={categorySpending} />
+                    <IncomeExpenseBarChart summary={summary} />
                   </div>
-                  <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-7">
+                </div>
+
+                <div className="no-print">
+                  <KpiCards summary={summary} />
+                  <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-7 mt-8">
                     <SpendingPieChart data={categorySpending} className="lg:col-span-3" />
                     <IncomeExpenseBarChart summary={summary} className="lg:col-span-4" />
                   </div>
-                  <div className="mt-4 no-print">
+                  <div className="mt-8">
                     <TransactionsTable transactions={transactions} setTransactions={setTransactions} />
                   </div>
                 </div>
