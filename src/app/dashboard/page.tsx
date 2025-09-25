@@ -247,11 +247,11 @@ export default function DashboardPage() {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent>
-                        <DropdownMenuItem onSelect={handleJsonDownload}>
+                        <DropdownMenuItem onClick={handleJsonDownload}>
                            <FileJson className="mr-2 h-4 w-4" />
                            JSON (para importar)
                         </DropdownMenuItem>
-                        <DropdownMenuItem onSelect={handlePrint}>
+                        <DropdownMenuItem onClick={handlePrint}>
                            <FileText className="mr-2 h-4 w-4" />
                            PDF (para visualizar)
                         </DropdownMenuItem>
@@ -342,7 +342,7 @@ export default function DashboardPage() {
                     <SpendingPieChart data={categorySpending} className="lg:col-span-3" />
                     <IncomeExpenseBarChart summary={summary} className="lg:col-span-4" />
                   </div>
-                  <div className="mt-4">
+                  <div className="mt-4 no-print">
                     <TransactionsTable transactions={transactions} setTransactions={setTransactions} />
                   </div>
                 </div>
