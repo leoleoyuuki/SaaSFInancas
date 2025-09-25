@@ -330,11 +330,6 @@ export default function DashboardPage() {
                 </div>
 
                 <div className="no-print">
-                  <KpiCards summary={summary} />
-                  <div className="mt-8 grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-7">
-                    <SpendingPieChart data={categorySpending} className="lg:col-span-3" />
-                    <IncomeExpenseBarChart summary={summary} className="lg:col-span-4" />
-                  </div>
                   <div className="mt-8">
                     <TransactionsTable transactions={transactions} setTransactions={setTransactions} />
                   </div>
