@@ -3,7 +3,6 @@ import { Button } from '@/components/ui/button';
 import { ArrowRight, Bot, UploadCloud, PieChart, ShieldCheck, Menu } from 'lucide-react';
 import { Sheet, SheetTrigger, SheetContent } from '@/components/ui/sheet';
 
-
 const Logo = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -24,7 +23,7 @@ export default function LandingPage() {
   return (
     <div className="flex min-h-screen flex-col bg-background text-foreground">
       <header className="w-full border-b border-border/40">
-        <div className="container flex h-14 items-center justify-between">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex h-14 items-center justify-between">
           <Link href="#" className="flex items-center gap-2">
             <Logo />
             <span className="text-xl font-bold font-headline text-foreground">
@@ -76,7 +75,8 @@ export default function LandingPage() {
 
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="container grid lg:grid-cols-2 place-items-center py-20 md:py-32 gap-10">
+        <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20 md:py-32">
+          <div className="grid lg:grid-cols-2 place-items-center gap-10">
             <div className="text-center lg:text-start space-y-6">
                 <main className="text-5xl md:text-6xl font-bold font-headline">
                     <h1 className="inline">
@@ -108,16 +108,17 @@ export default function LandingPage() {
             </div>
             
             {/* Image */}
-            <div className="hidden lg:block">
+            <div className="hidden lg:block w-full">
               <div className="bg-card p-4 rounded-xl shadow-lg border">
-                <img src="https://picsum.photos/seed/finance-dashboard/600/400" alt="FinanceFlow Dashboard Preview" data-ai-hint="financial dashboard" className="rounded-lg aspect-video object-cover" />
+                <img src="https://picsum.photos/seed/finance-dashboard/600/400" alt="FinanceFlow Dashboard Preview" data-ai-hint="financial dashboard" className="rounded-lg aspect-video object-cover w-full" />
               </div>
             </div>
+          </div>
         </section>
 
         {/* Features Section */}
-        <section id="features" className="container py-24 sm:py-32 space-y-8">
-            <h2 className="text-3xl lg:text-4xl font-headline font-bold md:text-center">
+        <section id="features" className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-24 sm:py-32 space-y-8">
+            <h2 className="text-3xl lg:text-4xl font-headline font-bold text-center">
                 Recursos Principais
             </h2>
 
@@ -155,7 +156,7 @@ export default function LandingPage() {
         </section>
 
         {/* How It Works Section */}
-        <section id="how-it-works" className="container py-24 sm:py-32 text-center">
+        <section id="how-it-works" className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-24 sm:py-32 text-center">
              <h2 className="text-3xl md:text-4xl font-bold font-headline">
                 Como Funciona em 3 Passos Simples
             </h2>
@@ -182,10 +183,9 @@ export default function LandingPage() {
             </div>
         </section>
 
-
         {/* CTA Section */}
         <section id="cta" className="bg-card">
-            <div className="container py-20 sm:py-24 text-center">
+            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20 sm:py-24 text-center">
                 <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold font-headline">
                     Pronto para assumir o controle?
                 </h2>
@@ -202,7 +202,7 @@ export default function LandingPage() {
       </main>
 
       <footer className="border-t">
-        <div className="container py-6 flex flex-col md:flex-row justify-between items-center gap-4">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6 flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-sm text-muted-foreground text-center md:text-left">
                 &copy; 2024 FinanceFlow. Todos os direitos reservados.
             </p>
