@@ -23,8 +23,8 @@ const Logo = () => (
 export default function LandingPage() {
   return (
     <div className="flex min-h-screen flex-col bg-background text-foreground">
-      <header className="w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-14 max-w-screen-2xl items-center justify-between">
+      <header className="w-full border-b border-border/40">
+        <div className="container flex h-14 items-center justify-between">
           <Link href="#" className="flex items-center gap-2">
             <Logo />
             <span className="text-xl font-bold font-headline text-foreground">
