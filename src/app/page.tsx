@@ -9,6 +9,7 @@ import {
   Menu,
 } from 'lucide-react';
 import { Sheet, SheetTrigger, SheetContent } from '@/components/ui/sheet';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 const Logo = () => (
   <svg
@@ -45,7 +46,7 @@ export default function LandingPage() {
             </Button>
             <Button asChild>
               <Link href="/dashboard">
-                Get Started <ArrowRight className="ml-2 h-4 w-4" />
+                Comece Agora <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>
           </nav>
@@ -76,7 +77,7 @@ export default function LandingPage() {
                   </Link>
                   <Button asChild>
                     <Link href="/dashboard">
-                      Get Started <ArrowRight className="ml-2 h-4 w-4" />
+                      Comece Agora <ArrowRight className="ml-2 h-4 w-4" />
                     </Link>
                   </Button>
                 </nav>
@@ -87,35 +88,33 @@ export default function LandingPage() {
       </header>
 
       <main className="flex-1">
-        {/* Hero Section */}
+        {/* 1. Hero Section (Problem + Solution) */}
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-32">
           <div className="grid place-items-center gap-10">
             <div className="space-y-6 text-center">
               <main className="text-5xl font-bold font-headline md:text-6xl">
                 <h1 className="inline">
                   <span className="inline bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
-                    Transforme
+                    Cansado
                   </span>{' '}
-                  seus extratos em
+                  de planilhas complicadas?
                 </h1>{' '}
                 <h2 className="inline">
+                  Assuma o controle das suas{' '}
                   <span className="inline bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
-                    Insights
-                  </span>{' '}
-                  financeiros
+                    finanças
+                  </span>
                 </h2>
               </main>
 
               <p className="mx-auto text-xl text-muted-foreground md:w-10/12">
-                Faça o upload do seu extrato bancário em PDF e deixe nossa I.A.
-                categorizar suas transações, revelar seus hábitos de consumo e
-                te ajudar a controlar suas finanças como nunca antes.
+                Esqueça a confusão. O FinanceFlow transforma seu extrato bancário em um dashboard claro e inteligente. Entenda seus gastos e organize sua vida financeira em minutos.
               </p>
 
               <div className="space-y-4 md:space-y-0 md:space-x-4">
-                <Button className="w-full md:w-auto" asChild>
+                <Button className="w-full md:w-auto" asChild size="lg">
                   <Link href="/dashboard">
-                    Comece agora
+                    Organizar minhas finanças
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Link>
                 </Button>
@@ -124,13 +123,13 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Features Section */}
+        {/* 2. Benefits Section (How it solves) */}
         <section
-          id="features"
+          id="benefits"
           className="container mx-auto space-y-8 px-4 py-24 sm:py-32 sm:px-6 lg:px-8"
         >
           <h2 className="text-center text-3xl font-bold font-headline lg:text-4xl">
-            Recursos Principais
+            Tudo que você precisa para ter clareza financeira
           </h2>
 
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
@@ -139,12 +138,10 @@ export default function LandingPage() {
                 <UploadCloud className="h-6 w-6" />
               </div>
               <h3 className="text-xl font-bold font-headline">
-                Upload Simples e Rápido
+                Extração Automática
               </h3>
               <p className="text-muted-foreground">
-                Basta arrastar e soltar seu extrato bancário em PDF. Nosso
-                sistema extrai os dados de forma segura e automática em
-                segundos.
+                Faça o upload do seu extrato em PDF. Nossa I.A. extrai todas as transações de forma segura e instantânea, sem trabalho manual.
               </p>
             </div>
 
@@ -153,12 +150,10 @@ export default function LandingPage() {
                 <Bot className="h-6 w-6" />
               </div>
               <h3 className="text-xl font-bold font-headline">
-                Categorização Inteligente com I.A.
+                Categorização Inteligente
               </h3>
               <p className="text-muted-foreground">
-                Nossa inteligência artificial analisa e categoriza cada
-                transação, permitindo que você entenda para onde seu dinheiro
-                está indo.
+                Cada gasto é classificado automaticamente. Saiba exatamente para onde seu dinheiro está indo: mercado, contas, lazer e mais.
               </p>
             </div>
 
@@ -170,23 +165,75 @@ export default function LandingPage() {
                 Dashboards Visuais
               </h3>
               <p className="text-muted-foreground">
-                Visualize seus gastos e receitas através de gráficos
-                interativos. Tenha uma visão clara da sua saúde financeira.
+                Visualize suas finanças com gráficos interativos e fáceis de entender. Tome decisões inteligentes com base em dados claros.
               </p>
             </div>
           </div>
         </section>
 
-        {/* How It Works Section */}
+        {/* 3. Social Proof Section */}
+        <section
+          id="social-proof"
+          className="bg-card"
+        >
+        <div className="container mx-auto px-4 py-24 sm:py-32 sm:px-6 lg:px-8">
+            <h2 className="text-center text-3xl font-bold font-headline lg:text-4xl">
+                Junte-se a milhares de pessoas que organizaram suas finanças
+            </h2>
+            <div className="mt-12 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+                <div className="flex flex-col rounded-lg border bg-background p-6 shadow-sm">
+                    <p className="flex-1 text-muted-foreground">"Finalmente entendi para onde meu dinheiro vai todo mês. O FinanceFlow tornou tudo tão simples que me arrependo de não ter usado antes."</p>
+                    <div className="mt-4 flex items-center">
+                        <Avatar>
+                            <AvatarImage src="https://i.pravatar.cc/150?img=1" alt="Juliana S." />
+                            <AvatarFallback>JS</AvatarFallback>
+                        </Avatar>
+                        <div className="ml-4">
+                            <p className="font-semibold">Juliana S.</p>
+                            <p className="text-sm text-muted-foreground">Designer</p>
+                        </div>
+                    </div>
+                </div>
+                <div className="flex flex-col rounded-lg border bg-background p-6 shadow-sm">
+                    <p className="flex-1 text-muted-foreground">"Eu odiava planilhas. O fato de poder simplesmente jogar meu extrato PDF e ter tudo analisado automaticamente é incrível. Economizou horas da minha vida."</p>
+                    <div className="mt-4 flex items-center">
+                        <Avatar>
+                            <AvatarImage src="https://i.pravatar.cc/150?img=2" alt="Marcos P." />
+                            <AvatarFallback>MP</AvatarFallback>
+                        </Avatar>
+                        <div className="ml-4">
+                            <p className="font-semibold">Marcos P.</p>
+                            <p className="text-sm text-muted-foreground">Desenvolvedor</p>
+                        </div>
+                    </div>
+                </div>
+                <div className="flex flex-col rounded-lg border bg-background p-6 shadow-sm">
+                     <p className="flex-1 text-muted-foreground">"Uma ferramenta poderosa e, ao mesmo tempo, super fácil de usar. O dashboard visual me ajudou a cortar gastos desnecessários e a economizar mais."</p>
+                     <div className="mt-4 flex items-center">
+                        <Avatar>
+                            <AvatarImage src="https://i.pravatar.cc/150?img=3" alt="Carla M." />
+                            <AvatarFallback>CM</AvatarFallback>
+                        </Avatar>
+                        <div className="ml-4">
+                            <p className="font-semibold">Carla M.</p>
+                            <p className="text-sm text-muted-foreground">Autônoma</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+          </div>
+        </section>
+
+        {/* 4. How It Works Section */}
         <section
           id="how-it-works"
           className="container mx-auto px-4 py-24 text-center sm:py-32 sm:px-6 lg:px-8"
         >
           <h2 className="text-3xl font-bold font-headline md:text-4xl">
-            Como Funciona em 3 Passos Simples
+            Comece em 3 Passos Simples
           </h2>
           <p className="mx-auto mt-4 mb-8 text-xl text-muted-foreground md:w-3/4">
-            Comece a organizar suas finanças em menos de um minuto.
+            Organize suas finanças em menos de um minuto. É sério.
           </p>
 
           <div className="grid grid-cols-1 gap-8 md:grid-cols-3 md:gap-12">
@@ -196,7 +243,7 @@ export default function LandingPage() {
               </div>
               <h3 className="text-xl font-bold font-headline">Faça o Upload</h3>
               <p className="text-muted-foreground">
-                Envie seu extrato bancário em formato PDF. É seguro e privado.
+                Envie seu extrato bancário em formato PDF. É 100% seguro e privado.
               </p>
             </div>
             <div className="flex flex-col items-center gap-4">
@@ -205,8 +252,7 @@ export default function LandingPage() {
               </div>
               <h3 className="text-xl font-bold font-headline">A I.A. Analisa</h3>
               <p className="text-muted-foreground">
-                Nossa tecnologia extrai e categoriza suas transações
-                automaticamente.
+                Nossa tecnologia extrai e categoriza suas transações em segundos.
               </p>
             </div>
             <div className="flex flex-col items-center gap-4">
@@ -214,25 +260,23 @@ export default function LandingPage() {
                 3
               </div>
               <h3 className="text-xl font-bold font-headline">
-                Visualize e Aja
+                Visualize Seus Dados
               </h3>
               <p className="text-muted-foreground">
-                Explore seus dados em um dashboard intuitivo e tome decisões
-                mais inteligentes.
+                Explore seu dashboard financeiro e tome decisões mais inteligentes.
               </p>
             </div>
           </div>
         </section>
 
-        {/* CTA Section */}
+        {/* 5. CTA Section */}
         <section id="cta" className="bg-card">
-          <div className="container mx-auto px-4 py-20 text-center sm:py-24 sm:px-6 lg:px-8">
+          <div className="container mx-auto px-4 py-20 text-center sm:py-24 sm:px-8">
             <h2 className="text-3xl font-bold font-headline md:text-4xl lg:text-5xl">
-              Pronto para assumir o controle?
+              Pronto para ter clareza financeira?
             </h2>
             <p className="mt-4 mb-8 text-lg text-muted-foreground md:text-xl">
-              Pare de adivinhar, comece a ver. Sua jornada para a clareza
-              financeira começa agora.
+              Sua jornada para uma vida financeira organizada começa com um clique. É grátis.
             </p>
             <Button asChild size="lg" className="px-8 py-6 text-lg">
               <Link href="/dashboard">Analisar Meu Extrato Gratuitamente</Link>
