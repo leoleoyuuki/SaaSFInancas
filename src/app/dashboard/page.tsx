@@ -132,12 +132,12 @@ export default function DashboardPage() {
       )}`;
       const link = document.createElement("a");
       link.href = jsonString;
-      link.download = "relatorio-financeflow.json";
+      link.download = "relatorio-finanfy.json";
 
       link.click();
        toast({
           title: "Download Iniciado",
-          description: "O arquivo relatorio-financeflow.json foi salvo.",
+          description: "O arquivo relatorio-finanfy.json foi salvo.",
         });
     } catch(error) {
         const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred.";
@@ -265,7 +265,7 @@ export default function DashboardPage() {
                 </div>
             </div>
             
-            <div ref={printableContentRef} className="space-y-8">
+            <div ref={printableContentRef} className="printable-content space-y-8">
                 <style type="text/css" media="print">
                 {`
                     @page { 
@@ -276,32 +276,26 @@ export default function DashboardPage() {
                       -webkit-print-color-adjust: exact !important; 
                       print-color-adjust: exact !important;
                     }
-                    .print-container { 
-                      padding: 0 !important; 
-                      margin: 0 !important;
-                      width: 100%;
-                      height: 100%;
-                    }
                     .no-print { 
                       display: none !important; 
                     }
-                    .print-content {
-                      display: grid;
-                      grid-template-rows: auto 1fr;
-                      height: 100%;
+                    .printable-content {
+                      display: block;
                       width: 100%;
-                      gap: 1rem;
+                      height: 100%;
                     }
-                    .kpi-grid {
+                    .kpi-cards-print {
                       display: grid !important;
                       grid-template-columns: repeat(3, 1fr) !important;
                       gap: 1rem !important;
+                      margin-bottom: 1rem;
                     }
-                    .charts-grid {
+                    .charts-grid-print {
                       display: grid !important;
                       grid-template-columns: 40% 1fr !important;
                       gap: 1rem !important;
-                      align-items: flex-start !important;
+                      align-items-flex-start !important;
+                      height: calc(100% - 150px);
                     }
                     .card {
                       border: 1px solid #e2e8f0;
@@ -321,8 +315,16 @@ export default function DashboardPage() {
                     }
                 `}
                 </style>
+                <div className="hidden print-block">
+                  <KpiCards summary={summary} className="kpi-cards-print" />
+                  <div className="charts-grid-print">
+                      <SpendingPieChart data={categorySpending} />
+                      <IncomeExpenseBarChart summary={summary} />
+                  </div>
+                </div>
+
                 <KpiCards summary={summary} />
-                <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-7">
+                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
                   <SpendingPieChart data={categorySpending} className="lg:col-span-3" />
                   <IncomeExpenseBarChart summary={summary} className="lg:col-span-4" />
                 </div>

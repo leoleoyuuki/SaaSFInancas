@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster"
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'FinanceFlow | Transforme Extratos em Insights Financeiros',
+  title: 'Finanfy | Transforme Extratos em Insights Financeiros',
   description: 'Faça o upload do seu extrato bancário em PDF e deixe a I.A. categorizar suas transações, revelar seus hábitos de consumo e ajudar a controlar suas finanças.',
   keywords: ['gerenciador financeiro', 'orçamento pessoal', 'análise de extrato bancário', 'finanças pessoais', 'controle de gastos', 'IA financeira'],
 };

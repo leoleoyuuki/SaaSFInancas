@@ -90,7 +90,7 @@ export default function LandingPage() {
   
   const testimonials = [
     {
-      quote: "Finalmente entendi para onde meu dinheiro vai todo mês. O FinanceFlow tornou tudo tão simples que me arrependo de não ter usado antes.",
+      quote: "Finalmente entendi para onde meu dinheiro vai todo mês. O Finanfy tornou tudo tão simples que me arrependo de não ter usado antes.",
       name: "Juliana S.",
       title: "Designer",
       img: "https://i.pravatar.cc/150?img=1"
@@ -122,7 +122,7 @@ export default function LandingPage() {
           <Link href="#" className="flex items-center gap-2">
             <Logo />
             <span className="text-xl font-bold font-headline text-foreground">
-              FinanceFlow
+              Finanfy
             </span>
           </Link>
 
@@ -154,7 +154,7 @@ export default function LandingPage() {
                     className="flex items-center gap-2 text-lg font-semibold"
                   >
                     <Logo />
-                    <span>FinanceFlow</span>
+                    <span>Finanfy</span>
                   </Link>
                   <Link
                     href="/dashboard"
@@ -194,7 +194,7 @@ export default function LandingPage() {
               </main>
 
               <p className="mx-auto text-xl text-muted-foreground md:w-10/12">
-                Esqueça a confusão. O FinanceFlow transforma seu extrato
+                Esqueça a confusão. O Finanfy transforma seu extrato
                 bancário em um dashboard claro e inteligente. Entenda seus
                 gastos e organize sua vida financeira em minutos.
               </p>
@@ -276,7 +276,7 @@ export default function LandingPage() {
                   Junte-se a milhares de pessoas que organizaram suas finanças
                 </h2>
                 <p className="text-lg text-muted-foreground mt-4 max-w-2xl mx-auto">
-                    Veja o que nossos usuários estão dizendo sobre a transformação financeira que o FinanceFlow proporcionou.
+                    Veja o que nossos usuários estão dizendo sobre a transformação financeira que o Finanfy proporcionou.
                 </p>
             </div>
 
@@ -512,7 +512,7 @@ export default function LandingPage() {
       <footer className="border-t">
         <div className="container mx-auto flex flex-col items-center justify-between gap-4 px-4 py-6 sm:px-6 md:flex-row lg:px-8">
           <p className="text-center text-sm text-muted-foreground md:text-left">
-            &copy; 2024 FinanceFlow. Todos os direitos reservados.
+            &copy; 2024 Finanfy. Todos os direitos reservados.
           </p>
           <div className="flex items-center gap-2 text-center text-sm text-muted-foreground">
             <ShieldCheck className="h-4 w-4" />

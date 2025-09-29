@@ -32,10 +32,10 @@ export default function Header() {
             className="flex items-center gap-2 text-lg font-semibold md:text-base"
           >
             <Logo/>
-            <span className="sr-only">FinanceFlow</span>
+            <span className="sr-only">Finanfy</span>
           </Link>
           <h1 className="text-2xl font-semibold font-headline text-foreground">
-            FinanceFlow
+            Finanfy
           </h1>
         </nav>
 
@@ -59,7 +59,7 @@ export default function Header() {
                     className="flex items-center gap-2 text-lg font-semibold"
                 >
                     <Logo />
-                    <span>FinanceFlow</span>
+                    <span>Finanfy</span>
                 </Link>
                 <Link href="/dashboard" className="hover:text-foreground">
                     Dashboard
